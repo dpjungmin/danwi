@@ -1,177 +1,177 @@
 //! Tests for the rational module.
 
-mod rational_tests {
-    use crate::rational::Rational;
+mod continued_fraction_algorithm;
 
-    #[test]
-    fn try_new_returns_none_if_denominator_is_zero() {
-        assert_eq!(Rational::try_new(i128::MIN, 0), None);
-        assert_eq!(Rational::try_new(i128::MAX, 0), None);
+use crate::rational::Rational;
 
-        assert_eq!(Rational::try_new(-1, u128::MIN), None);
-        assert_eq!(Rational::try_new(0, u128::MIN), None);
-        assert_eq!(Rational::try_new(1, u128::MIN), None);
+#[test]
+fn try_new_returns_none_if_denominator_is_zero() {
+    assert_eq!(Rational::try_new(i128::MIN, 0), None);
+    assert_eq!(Rational::try_new(i128::MAX, 0), None);
 
-        assert_eq!(Rational::try_new(-1, 0), None);
-        assert_eq!(Rational::try_new(0, 0), None);
-        assert_eq!(Rational::try_new(1, 0), None);
-    }
+    assert_eq!(Rational::try_new(-1, u128::MIN), None);
+    assert_eq!(Rational::try_new(0, u128::MIN), None);
+    assert_eq!(Rational::try_new(1, u128::MIN), None);
 
-    #[test]
-    fn try_new_automatically_reduces_to_lowest_terms() {
-        let r = Rational::try_new(2, 4).unwrap();
-        assert_eq!(r.numerator(), 1);
-        assert_eq!(r.denominator(), 2);
+    assert_eq!(Rational::try_new(-1, 0), None);
+    assert_eq!(Rational::try_new(0, 0), None);
+    assert_eq!(Rational::try_new(1, 0), None);
+}
 
-        let r = Rational::try_new(3, 9).unwrap();
-        assert_eq!(r.numerator(), 1);
-        assert_eq!(r.denominator(), 3);
+#[test]
+fn try_new_automatically_reduces_to_lowest_terms() {
+    let r = Rational::try_new(2, 4).unwrap();
+    assert_eq!(r.numerator(), 1);
+    assert_eq!(r.denominator(), 2);
 
-        let r = Rational::try_new(10, 35).unwrap();
-        assert_eq!(r.numerator(), 2);
-        assert_eq!(r.denominator(), 7);
+    let r = Rational::try_new(3, 9).unwrap();
+    assert_eq!(r.numerator(), 1);
+    assert_eq!(r.denominator(), 3);
 
-        let r = Rational::try_new(0, 5).unwrap();
-        assert_eq!(r.numerator(), 0);
-        assert_eq!(r.denominator(), 1);
-    }
+    let r = Rational::try_new(10, 35).unwrap();
+    assert_eq!(r.numerator(), 2);
+    assert_eq!(r.denominator(), 7);
 
-    #[test]
-    fn try_new_handles_valid_inputs() {
-        assert_eq!(
-            Rational::try_new(1, 2),
-            Some(Rational {
-                numerator: 1,
-                denominator: 2
-            })
-        );
-        assert_eq!(
-            Rational::try_new(2, 4),
-            Some(Rational {
-                numerator: 1,
-                denominator: 2
-            })
-        );
-        assert_eq!(
-            Rational::try_new(-2, 3),
-            Some(Rational {
-                numerator: -2,
-                denominator: 3
-            })
-        );
-        assert_eq!(
-            Rational::try_new(0, 5),
-            Some(Rational {
-                numerator: 0,
-                denominator: 1
-            })
-        );
-    }
+    let r = Rational::try_new(0, 5).unwrap();
+    assert_eq!(r.numerator(), 0);
+    assert_eq!(r.denominator(), 1);
+}
 
-    #[test]
-    #[should_panic]
-    fn new_panics_if_denominator_is_zero() {
-        Rational::new(1, 0);
-    }
+#[test]
+fn try_new_handles_valid_inputs() {
+    assert_eq!(
+        Rational::try_new(1, 2),
+        Some(Rational {
+            numerator: 1,
+            denominator: 2
+        })
+    );
+    assert_eq!(
+        Rational::try_new(2, 4),
+        Some(Rational {
+            numerator: 1,
+            denominator: 2
+        })
+    );
+    assert_eq!(
+        Rational::try_new(-2, 3),
+        Some(Rational {
+            numerator: -2,
+            denominator: 3
+        })
+    );
+    assert_eq!(
+        Rational::try_new(0, 5),
+        Some(Rational {
+            numerator: 0,
+            denominator: 1
+        })
+    );
+}
 
-    #[test]
-    fn new_automatically_reduces_to_lowest_terms() {
-        let r = Rational::new(2, 4);
-        assert_eq!(r.numerator(), 1);
-        assert_eq!(r.denominator(), 2);
+#[test]
+#[should_panic]
+fn new_panics_if_denominator_is_zero() {
+    Rational::new(1, 0);
+}
 
-        let r = Rational::new(3, 9);
-        assert_eq!(r.numerator(), 1);
-        assert_eq!(r.denominator(), 3);
+#[test]
+fn new_automatically_reduces_to_lowest_terms() {
+    let r = Rational::new(2, 4);
+    assert_eq!(r.numerator(), 1);
+    assert_eq!(r.denominator(), 2);
 
-        let r = Rational::new(10, 35);
-        assert_eq!(r.numerator(), 2);
-        assert_eq!(r.denominator(), 7);
+    let r = Rational::new(3, 9);
+    assert_eq!(r.numerator(), 1);
+    assert_eq!(r.denominator(), 3);
 
-        let r = Rational::new(0, 5);
-        assert_eq!(r.numerator(), 0);
-        assert_eq!(r.denominator(), 1);
-    }
+    let r = Rational::new(10, 35);
+    assert_eq!(r.numerator(), 2);
+    assert_eq!(r.denominator(), 7);
 
-    #[test]
-    fn new_handles_valid_inputs() {
-        assert_eq!(
-            Rational::new(1, 2),
-            Rational {
-                numerator: 1,
-                denominator: 2
-            }
-        );
-        assert_eq!(
-            Rational::new(2, 4),
-            Rational {
-                numerator: 1,
-                denominator: 2
-            }
-        );
-        assert_eq!(
-            Rational::new(-2, 3),
-            Rational {
-                numerator: -2,
-                denominator: 3
-            }
-        );
-        assert_eq!(
-            Rational::new(0, 5),
-            Rational {
-                numerator: 0,
-                denominator: 1
-            }
-        );
-    }
+    let r = Rational::new(0, 5);
+    assert_eq!(r.numerator(), 0);
+    assert_eq!(r.denominator(), 1);
+}
 
-    #[test]
-    fn checked_recip_returns_none_if_numerator_is_zero() {
-        assert_eq!(Rational::zero().checked_recip(), None);
-        assert_eq!(Rational::new(0, 1).checked_recip(), None);
-        assert_eq!(Rational::new(0, 5).checked_recip(), None);
-    }
+#[test]
+fn new_handles_valid_inputs() {
+    assert_eq!(
+        Rational::new(1, 2),
+        Rational {
+            numerator: 1,
+            denominator: 2
+        }
+    );
+    assert_eq!(
+        Rational::new(2, 4),
+        Rational {
+            numerator: 1,
+            denominator: 2
+        }
+    );
+    assert_eq!(
+        Rational::new(-2, 3),
+        Rational {
+            numerator: -2,
+            denominator: 3
+        }
+    );
+    assert_eq!(
+        Rational::new(0, 5),
+        Rational {
+            numerator: 0,
+            denominator: 1
+        }
+    );
+}
 
-    #[test]
-    fn checked_recip_returns_none_if_denominator_is_greater_than_i128_max() {
-        let overflow = Rational::new(1, u128::MAX);
-        assert_eq!(overflow.checked_recip(), None);
-    }
+#[test]
+fn checked_recip_returns_none_if_numerator_is_zero() {
+    assert_eq!(Rational::zero().checked_recip(), None);
+    assert_eq!(Rational::new(0, 1).checked_recip(), None);
+    assert_eq!(Rational::new(0, 5).checked_recip(), None);
+}
 
-    #[test]
-    fn checked_recip_handles_valid_inputs() {
-        assert_eq!(
-            Rational::new(1, 2).checked_recip(),
-            Some(Rational::new(2, 1))
-        );
-        assert_eq!(
-            Rational::new(2, 7).checked_recip(),
-            Some(Rational::new(7, 2))
-        );
-        assert_eq!(
-            Rational::new(-3, 4).checked_recip(),
-            Some(Rational::new(-4, 3))
-        );
-    }
+#[test]
+fn checked_recip_returns_none_if_denominator_is_greater_than_i128_max() {
+    let overflow = Rational::new(1, u128::MAX);
+    assert_eq!(overflow.checked_recip(), None);
+}
 
-    #[test]
-    #[should_panic(expected = "cannot take reciprocal of zero")]
-    fn recip_panics_if_numerator_is_zero() {
-        Rational::zero().recip();
-    }
+#[test]
+fn checked_recip_handles_valid_inputs() {
+    assert_eq!(
+        Rational::new(1, 2).checked_recip(),
+        Some(Rational::new(2, 1))
+    );
+    assert_eq!(
+        Rational::new(2, 7).checked_recip(),
+        Some(Rational::new(7, 2))
+    );
+    assert_eq!(
+        Rational::new(-3, 4).checked_recip(),
+        Some(Rational::new(-4, 3))
+    );
+}
 
-    #[test]
-    #[should_panic(expected = "reciprocal overflow: denominator too large")]
-    fn recip_panics_if_denominator_is_greater_than_i128_max() {
-        Rational::new(1, u128::MAX).recip();
-    }
+#[test]
+#[should_panic(expected = "cannot take reciprocal of zero")]
+fn recip_panics_if_numerator_is_zero() {
+    Rational::zero().recip();
+}
 
-    #[test]
-    fn recip_handles_valid_inputs() {
-        assert_eq!(Rational::new(1, 2).recip(), Rational::new(2, 1));
-        assert_eq!(Rational::new(2, 7).recip(), Rational::new(7, 2));
-        assert_eq!(Rational::new(-3, 4).recip(), Rational::new(-4, 3));
-    }
+#[test]
+#[should_panic(expected = "reciprocal overflow: denominator too large")]
+fn recip_panics_if_denominator_is_greater_than_i128_max() {
+    Rational::new(1, u128::MAX).recip();
+}
+
+#[test]
+fn recip_handles_valid_inputs() {
+    assert_eq!(Rational::new(1, 2).recip(), Rational::new(2, 1));
+    assert_eq!(Rational::new(2, 7).recip(), Rational::new(7, 2));
+    assert_eq!(Rational::new(-3, 4).recip(), Rational::new(-4, 3));
 }
 
 mod gcd_u128_tests {

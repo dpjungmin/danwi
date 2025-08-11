@@ -15,6 +15,8 @@
 
 use core::fmt;
 
+mod convert;
+
 #[cfg(test)]
 mod tests;
 
