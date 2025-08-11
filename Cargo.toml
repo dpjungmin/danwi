@@ -1,7 +1,10 @@
 [package]
 name = "danwi"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "A units library"
+authors = ["David Park <dpjungmin@gmail.com>"]
+repository = "https://github.com/dpjungmin/danwi"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
