@@ -1,5 +1,6 @@
 //! Tests for the rational module.
 
+mod arithmetic;
 mod continued_fraction_algorithm;
 
 use crate::rational::Rational;
