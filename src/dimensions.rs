@@ -524,27 +524,180 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_complex_dimensions() {
-        // V = I * R
-        let voltage = ELECTRIC_CURRENT.mul(RESISTANCE);
-        assert_eq!(voltage, VOLTAGE);
-
-        // V = W / I
-        let voltage = POWER.div(ELECTRIC_CURRENT);
-        assert_eq!(voltage, VOLTAGE);
-
-        // R = V / I
-        let resistance = VOLTAGE.div(ELECTRIC_CURRENT);
-        assert_eq!(resistance, RESISTANCE);
+    fn multiplication_is_applied_to_all_quantities() {
+        let a = Dimensions {
+            time: 1,
+            length: 2,
+            mass: 3,
+            electric_current: 4,
+            thermodynamic_temperature: 5,
+            amount_of_substance: 6,
+            luminous_intensity: 7,
+        };
+        let b = Dimensions {
+            time: 1,
+            length: 2,
+            mass: 3,
+            electric_current: 4,
+            thermodynamic_temperature: 5,
+            amount_of_substance: 6,
+            luminous_intensity: 7,
+        };
+        let c = a.mul(b);
+        assert_eq!(c.time, 2);
+        assert_eq!(c.length, 4);
+        assert_eq!(c.mass, 6);
+        assert_eq!(c.electric_current, 8);
+        assert_eq!(c.thermodynamic_temperature, 10);
+        assert_eq!(c.amount_of_substance, 12);
+        assert_eq!(c.luminous_intensity, 14);
     }
 
     #[test]
-    fn test_dimension_cancellation() {
-        let d = LENGTH.mul(LENGTH.recip());
-        assert!(d.is_dimensionless());
+    fn division_is_applied_to_all_quantities() {
+        let a = Dimensions {
+            time: 1,
+            length: 2,
+            mass: 3,
+            electric_current: 4,
+            thermodynamic_temperature: 5,
+            amount_of_substance: 6,
+            luminous_intensity: 7,
+        };
+        let b = Dimensions {
+            time: 0,
+            length: 1,
+            mass: 2,
+            electric_current: 3,
+            thermodynamic_temperature: 4,
+            amount_of_substance: 5,
+            luminous_intensity: 6,
+        };
+        let c = a.div(b);
+        assert_eq!(c.time, 1);
+        assert_eq!(c.length, 1);
+        assert_eq!(c.mass, 1);
+        assert_eq!(c.electric_current, 1);
+        assert_eq!(c.thermodynamic_temperature, 1);
+        assert_eq!(c.amount_of_substance, 1);
+        assert_eq!(c.luminous_intensity, 1);
+    }
 
-        // LT⁻¹ * T = L
-        let d = VELOCITY.mul(TIME);
-        assert_eq!(d, LENGTH);
+    #[test]
+    fn multiplication_is_associative() {
+        // (A * B) * C = A * (B * C)
+        let a = (FORCE.mul(VELOCITY)).mul(TIME);
+        let b = FORCE.mul(VELOCITY.mul(TIME));
+        assert_eq!(a, b);
+    }
+
+    #[test]
+    fn multiplication_is_commutative() {
+        // A * B = B * A
+        assert_eq!(LENGTH.mul(TIME), TIME.mul(LENGTH));
+        assert_eq!(MASS.mul(VELOCITY), VELOCITY.mul(MASS));
+        assert_eq!(FORCE.mul(LENGTH), LENGTH.mul(FORCE));
+    }
+
+    #[test]
+    fn dimensionless_is_multiplicative_identity() {
+        // A * 1 = A
+        assert_eq!(LENGTH.mul(DIMENSIONLESS), LENGTH);
+        assert_eq!(FORCE.mul(DIMENSIONLESS), FORCE);
+        assert_eq!(ENERGY.mul(DIMENSIONLESS), ENERGY);
+        assert_eq!(VOLTAGE.mul(DIMENSIONLESS), VOLTAGE);
+    }
+
+    #[test]
+    fn reciprocal_is_multiplicative_inverse() {
+        // A * A^-1 = 1
+        assert!(LENGTH.mul(LENGTH.recip()).is_dimensionless());
+        assert!(FORCE.mul(FORCE.recip()).is_dimensionless());
+        assert!(ENERGY.mul(ENERGY.recip()).is_dimensionless());
+        assert!(VOLTAGE.mul(VOLTAGE.recip()).is_dimensionless());
+        assert!(ACCELERATION.mul(ACCELERATION.recip()).is_dimensionless());
+    }
+
+    #[test]
+    fn division_by_self_yields_dimensionless() {
+        // A / A = 1
+        assert!(LENGTH.div(LENGTH).is_dimensionless());
+        assert!(ENERGY.div(ENERGY).is_dimensionless());
+        assert!(FORCE.div(FORCE).is_dimensionless());
+        assert!(PRESSURE.div(PRESSURE).is_dimensionless());
+        assert!(CHARGE.div(CHARGE).is_dimensionless());
+    }
+
+    #[test]
+    fn power_of_power_multiplies_exponents() {
+        // (A^n)^m = A^(n * m)
+        assert_eq!(LENGTH.pow(2).pow(3), LENGTH.pow(6));
+        assert_eq!(TIME.pow(3).pow(2), TIME.pow(6));
+        assert_eq!(MASS.pow(2).pow(-2), MASS.pow(-4));
+    }
+
+    #[test]
+    fn power_zero_yields_dimensionless() {
+        // A^0 = 1
+        assert!(LENGTH.pow(0).is_dimensionless());
+        assert!(FORCE.pow(0).is_dimensionless());
+        assert!(ENERGY.pow(0).is_dimensionless());
+        assert!(VOLTAGE.pow(0).is_dimensionless());
+    }
+
+    #[test]
+    fn power_one_preserves_dimension() {
+        // A^1 = A
+        assert_eq!(LENGTH.pow(1), LENGTH);
+        assert_eq!(FORCE.pow(1), FORCE);
+        assert_eq!(ENERGY.pow(1), ENERGY);
+        assert_eq!(RESISTANCE.pow(1), RESISTANCE);
+    }
+
+    #[test]
+    fn negative_power_equals_reciprocal_of_positive_power() {
+        // A^(-n) = (A^n)^(-1)
+        assert_eq!(LENGTH.pow(-2), LENGTH.pow(2).recip());
+        assert_eq!(TIME.pow(-3), TIME.pow(3).recip());
+        assert_eq!(MASS.pow(-1), MASS.recip());
+
+        // Also verify A^(-1) = A.recip()
+        assert_eq!(LENGTH.pow(-1), LENGTH.recip());
+        assert_eq!(VELOCITY.pow(-1), VELOCITY.recip());
+    }
+
+    #[test]
+    fn dimensionless_remains_dimensionless_under_all_operations() {
+        // 1 * 1 = 1
+        assert!(DIMENSIONLESS.mul(DIMENSIONLESS).is_dimensionless());
+
+        // 1 / 1 = 1
+        assert!(DIMENSIONLESS.div(DIMENSIONLESS).is_dimensionless());
+
+        // 1^n = 1
+        assert!(DIMENSIONLESS.pow(0).is_dimensionless());
+        assert!(DIMENSIONLESS.pow(1).is_dimensionless());
+        assert!(DIMENSIONLESS.pow(5).is_dimensionless());
+        assert!(DIMENSIONLESS.pow(-1).is_dimensionless());
+        assert!(DIMENSIONLESS.pow(-3).is_dimensionless());
+
+        // 1.recip() = 1^(-1) = 1
+        assert!(DIMENSIONLESS.recip().is_dimensionless());
+    }
+
+    #[test]
+    fn power_distributes_over_multiplication() {
+        // (A * B)^n = A^n * B^n
+        let a = (LENGTH.mul(TIME)).pow(2);
+        let b = LENGTH.pow(2).mul(TIME.pow(2));
+        assert_eq!(a, b);
+    }
+
+    #[test]
+    fn power_distributes_over_division() {
+        // (A / B)^n = A^n / B^n
+        let a = (LENGTH.div(TIME)).pow(2);
+        let b = LENGTH.pow(2).div(TIME.pow(2));
+        assert_eq!(a, b);
     }
 }
