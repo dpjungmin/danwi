@@ -55,7 +55,6 @@ impl Dimensions {
     ///
     /// ```
     /// # use danwi::dimensions::Dimensions;
-    ///
     /// let mut a = Dimensions::dimensionless();
     /// let mut b = Dimensions::dimensionless();
     ///
@@ -95,7 +94,6 @@ impl Dimensions {
     ///
     /// ```
     /// # use danwi::dimensions::Dimensions;
-    ///
     /// let mut a = Dimensions::dimensionless();
     /// let mut b = Dimensions::dimensionless();
     ///
@@ -134,7 +132,6 @@ impl Dimensions {
     ///
     /// ```
     /// # use danwi::dimensions::Dimensions;
-    ///
     /// let mut a = Dimensions::dimensionless();
     ///
     /// a.time = 1;
@@ -170,7 +167,6 @@ impl Dimensions {
     ///
     /// ```
     /// # use danwi::dimensions::Dimensions;
-    ///
     /// let mut a = Dimensions::dimensionless();
     ///
     /// a.time = 1;
