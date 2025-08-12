@@ -28,7 +28,7 @@ mod tests;
 /// - Sign is always in the numerator.
 /// - Denominator is always positive.
 /// - Fraction is always in lowest terms.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq)]
 pub struct Rational {
     pub(super) numerator: i128,
     pub(super) denominator: u128,
@@ -77,12 +77,13 @@ impl Rational {
 
         // Reduce fraction to lowest terms
         //
-        // Note: These checked_div calls are defensive programming.
+        // Note: These try and checked calls are simply being defensive.
         // Mathematically, they can never fail because:
         // - GCD is always >= 1 (so no division by zero)
         // - GCD is always <= min(|numerator|, denominator) (so no overflow)
         // - overflow only occurs with i128::MIN / -1
-        let numerator = numerator.checked_div(gcd as _)?;
+        let gcd_i128 = i128::try_from(gcd).ok()?;
+        let numerator = numerator.checked_div(gcd_i128)?;
         let denominator = denominator.checked_div(gcd)?;
 
         Some(Self {
@@ -199,16 +200,7 @@ impl Rational {
     /// Rational::new(1, u128::MAX).recip();
     /// ```
     pub fn recip(self) -> Self {
-        match self.checked_recip() {
-            Some(result) => result,
-            None => {
-                if self.numerator == 0 {
-                    panic!("cannot take reciprocal of zero");
-                } else {
-                    panic!("reciprocal overflow: denominator too large");
-                }
-            }
-        }
+        self.checked_recip().unwrap()
     }
 
     /// Returns the zero rational (0/1).
@@ -308,10 +300,33 @@ impl Rational {
 impl fmt::Display for Rational {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if self.denominator == 1 {
-            return write!(f, "{}", self.numerator);
+            write!(f, "{}", self.numerator)
+        } else {
+            write!(f, "{}/{}", self.numerator, self.denominator)
         }
+    }
+}
 
-        write!(f, "{}/{}", self.numerator, self.denominator)
+/// Formats a rational number for debug.
+///
+/// # Examples
+///
+/// ```
+/// # use danwi::rational::Rational;
+/// // Integers display without denominator
+/// assert_eq!(format!("{:?}", Rational::new_int(5)), "5");
+/// assert_eq!(format!("{:?}", Rational::new_int(-3)), "-3");
+///
+/// // Fractions display as numerator/denominator
+/// assert_eq!(format!("{:?}", Rational::new(3, 4)), "3/4");
+/// assert_eq!(format!("{:?}", Rational::new(-2, 3)), "-2/3");
+///
+/// // Fractions are always reduced
+/// assert_eq!(format!("{:?}", Rational::new(6, 8)), "3/4");
+/// ```
+impl fmt::Debug for Rational {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(self, f)
     }
 }
 

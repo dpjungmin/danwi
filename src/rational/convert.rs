@@ -133,16 +133,7 @@ impl Rational {
     /// Rational::from_f64_limited(f64::MAX, 1000);
     /// ```
     pub fn from_f64_limited(value: f64, max_denominator: u128) -> Self {
-        match Self::try_from_f64_limited(value, max_denominator) {
-            Some(rational) => rational,
-            None => {
-                if !value.is_finite() {
-                    panic!("Cannot convert non-finite f64 to Rational");
-                } else {
-                    panic!("Numerator overflow: value too large for Rational");
-                }
-            }
-        }
+        Self::try_from_f64_limited(value, max_denominator).unwrap()
     }
 
     /// Creates a rational approximation from a floating-point value.

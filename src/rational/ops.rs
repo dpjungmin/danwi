@@ -29,8 +29,7 @@ impl Add for Rational {
     /// Rational::new_int(i128::MAX) + Rational::new_int(1);
     /// ```
     fn add(self, other: Self) -> Self {
-        self.checked_add(&other)
-            .expect("Rational addition overflow")
+        self.checked_add(&other).unwrap()
     }
 }
 
@@ -60,8 +59,7 @@ impl Sub for Rational {
     /// Rational::new_int(i128::MIN) - Rational::new_int(1);
     /// ```
     fn sub(self, other: Self) -> Self {
-        self.checked_sub(&other)
-            .expect("Rational subtraction overflow")
+        self.checked_sub(&other).unwrap()
     }
 }
 
@@ -96,8 +94,7 @@ impl Mul for Rational {
     /// Rational::new_int(i128::MIN) * Rational::new_int(2);
     /// ```
     fn mul(self, other: Self) -> Self {
-        self.checked_mul(&other)
-            .expect("Rational multiplication overflow")
+        self.checked_mul(&other).unwrap()
     }
 }
 
@@ -134,16 +131,7 @@ impl Div for Rational {
     /// Rational::new_int(i128::MAX) / Rational::new(1, u128::MAX);
     /// ```
     fn div(self, other: Self) -> Self {
-        match self.checked_div(&other) {
-            Some(result) => result,
-            None => {
-                if other.numerator == 0 {
-                    panic!("Division by zero")
-                } else {
-                    panic!("Rational division overflow")
-                }
-            }
-        }
+        self.checked_div(&other).unwrap()
     }
 }
 
@@ -171,8 +159,7 @@ impl Neg for Rational {
     /// -Rational::new_int(i128::MIN);
     /// ```
     fn neg(self) -> Self {
-        self.checked_neg()
-            .expect("Rational negation overflow: cannot negate i128::MIN")
+        self.checked_neg().unwrap()
     }
 }
 
@@ -225,13 +212,11 @@ impl Rational {
     /// assert_eq!(Rational::new_int(i128::MIN).checked_sub(&Rational::new_int(1)), None);
     /// ```
     pub fn checked_sub(&self, other: &Self) -> Option<Self> {
-        // Reuse addition with negated other
-        // Check for overflow when negating
-        let neg_numerator = other.numerator.checked_neg()?;
         let neg_other = Self {
-            numerator: neg_numerator,
+            numerator: other.numerator.checked_neg()?,
             denominator: other.denominator,
         };
+
         self.checked_add(&neg_other)
     }
 
@@ -308,13 +293,9 @@ impl Rational {
     /// assert_eq!(Rational::new_int(i128::MIN).checked_neg(), None);
     /// ```
     pub fn checked_neg(&self) -> Option<Self> {
-        let numerator = self.numerator.checked_neg()?;
         Some(Self {
-            numerator,
+            numerator: self.numerator.checked_neg()?,
             denominator: self.denominator,
         })
     }
 }
-
-// TODO: add saturating arithmetic operations
-// TODO: add overflowing arithmetic operations
