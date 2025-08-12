@@ -232,46 +232,6 @@ impl Rational {
     }
 }
 
-impl From<i32> for Rational {
-    /// Converts an i32 to a Rational.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use danwi::rational::Rational;
-    /// let five: Rational = 5_i32.into();
-    /// assert_eq!(five, Rational::new(5, 1));
-    ///
-    /// assert_eq!(Rational::from(-3_i32), Rational::new(-3, 1));
-    /// assert_eq!(Rational::from(0_i32), Rational::new(0, 1));
-    /// assert_eq!(Rational::from(i32::MIN), Rational::new(i32::MIN as _, 1));
-    /// assert_eq!(Rational::from(i32::MAX), Rational::new(i32::MAX as _, 1));
-    /// ```
-    fn from(value: i32) -> Self {
-        Self::new_int(value as _)
-    }
-}
-
-impl From<i64> for Rational {
-    /// Converts an i64 to a Rational.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use danwi::rational::Rational;
-    /// let five: Rational = 5_i64.into();
-    /// assert_eq!(five, Rational::new(5, 1));
-    ///
-    /// assert_eq!(Rational::from(-3_i64), Rational::new(-3, 1));
-    /// assert_eq!(Rational::from(0_i64), Rational::new(0, 1));
-    /// assert_eq!(Rational::from(i64::MIN), Rational::new(i64::MIN as _, 1));
-    /// assert_eq!(Rational::from(i64::MAX), Rational::new(i64::MAX as _, 1));
-    /// ```
-    fn from(value: i64) -> Self {
-        Self::new_int(value as _)
-    }
-}
-
 impl TryFrom<f32> for Rational {
     type Error = ();
 
@@ -320,6 +280,46 @@ impl TryFrom<f64> for Rational {
     /// ```
     fn try_from(value: f64) -> Result<Self, Self::Error> {
         Self::try_from_f64(value).ok_or(())
+    }
+}
+
+impl From<i32> for Rational {
+    /// Converts an i32 to a Rational.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use danwi::rational::Rational;
+    /// let five: Rational = 5_i32.into();
+    /// assert_eq!(five, Rational::new(5, 1));
+    ///
+    /// assert_eq!(Rational::from(-3_i32), Rational::new(-3, 1));
+    /// assert_eq!(Rational::from(0_i32), Rational::new(0, 1));
+    /// assert_eq!(Rational::from(i32::MIN), Rational::new(i32::MIN as _, 1));
+    /// assert_eq!(Rational::from(i32::MAX), Rational::new(i32::MAX as _, 1));
+    /// ```
+    fn from(value: i32) -> Self {
+        Self::new_int(value as _)
+    }
+}
+
+impl From<i64> for Rational {
+    /// Converts an i64 to a Rational.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use danwi::rational::Rational;
+    /// let five: Rational = 5_i64.into();
+    /// assert_eq!(five, Rational::new(5, 1));
+    ///
+    /// assert_eq!(Rational::from(-3_i64), Rational::new(-3, 1));
+    /// assert_eq!(Rational::from(0_i64), Rational::new(0, 1));
+    /// assert_eq!(Rational::from(i64::MIN), Rational::new(i64::MIN as _, 1));
+    /// assert_eq!(Rational::from(i64::MAX), Rational::new(i64::MAX as _, 1));
+    /// ```
+    fn from(value: i64) -> Self {
+        Self::new_int(value as _)
     }
 }
 
