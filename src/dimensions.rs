@@ -353,8 +353,7 @@ pub mod base {
 /// This module provides dimension constants for commonly used derived
 /// quantities.
 pub mod derived {
-    use super::Dimensions;
-    use super::base::*;
+    use super::{Dimensions, base::*};
 
     /// Dimensionless quantity.
     pub const DIMENSIONLESS: Dimensions = Dimensions::dimensionless();
@@ -515,9 +514,7 @@ pub mod derived {
 
 #[cfg(test)]
 mod tests {
-    use super::base::*;
-    use super::derived::*;
-    use super::*;
+    use super::{base::*, derived::*, *};
 
     #[test]
     fn multiplication_is_applied_to_all_quantities() {

@@ -222,9 +222,9 @@ impl Rational {
 
     /// Converts the rational to an f32 approximation.
     ///
-    /// This conversion may lose significantly more precision than [`Self::to_f64`],
-    /// as f32 has only 24 bits of mantissa precision compared to f64's 53
-    /// bits.
+    /// This conversion may lose significantly more precision than
+    /// [`Self::to_f64`], as f32 has only 24 bits of mantissa precision
+    /// compared to f64's 53 bits.
     ///
     /// # Examples
     ///

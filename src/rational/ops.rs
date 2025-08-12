@@ -268,7 +268,8 @@ impl Rational {
         })
     }
 
-    /// Attempts to divide two rationals, returning `None` on overflow or division by zero.
+    /// Attempts to divide two rationals, returning `None` on overflow or
+    /// division by zero.
     ///
     /// # Examples
     ///

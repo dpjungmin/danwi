@@ -101,7 +101,7 @@ impl Rational {
     /// Panics if:
     /// - The `denominator` is zero.
     /// - Reduction causes an overflow (should never be possible, but we check
-    /// to protect against any bugs).
+    ///   to protect against any bugs).
     ///
     /// # Examples
     ///

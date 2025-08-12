@@ -10,13 +10,34 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
+  format:
+    name: Check Formatting
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
-    - name: Build
+
+    - name: Install nightly rustfmt
+      run: |
+        rustup toolchain install nightly --component rustfmt
+        rustup component add rustfmt --toolchain nightly
+
+    - name: Check formatting
+      run: cargo +nightly fmt --all -- --check
+
+  build:
+    name: Build Package
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build package
       run: cargo build --verbose
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
     - name: Run tests
       run: cargo test --verbose
