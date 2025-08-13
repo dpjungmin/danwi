@@ -49,7 +49,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// // Basic fractions
     /// let one_half = Rational::try_new(1, 2).unwrap();
     /// let one_third = Rational::try_new(1, 3).unwrap();
@@ -107,7 +107,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// // Basic fractions
     /// let one_half = Rational::new(1, 2);
     /// let one_third = Rational::new(1, 3);
@@ -128,7 +128,7 @@ impl Rational {
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::new(1, 0);  // Zero denominator panics
     /// ```
     pub fn new(numerator: i128, denominator: u128) -> Self {
@@ -144,7 +144,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// let one_half = Rational::new(1, 2);
     /// assert_eq!(one_half.checked_recip(), Some(Rational::new(2, 1)));
     ///
@@ -185,18 +185,18 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// assert_eq!(Rational::new(2, 3).recip(), Rational::new(3, 2));
     /// assert_eq!(Rational::new(-2, 5).recip(), Rational::new(-5, 2));
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::zero().recip();
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::new(1, u128::MAX).recip();
     /// ```
     pub fn recip(self) -> Self {
@@ -208,7 +208,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// let zero = Rational::zero();
     /// assert_eq!(zero.numerator(), 0);
     /// assert_eq!(zero.denominator(), 1);
@@ -224,7 +224,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// let five = Rational::new_int(5);
     /// assert_eq!(five.numerator(), 5);
     /// assert_eq!(five.denominator(), 1);
@@ -243,7 +243,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// // Numerator carries the sign
     /// assert_eq!(Rational::new(3, 4).numerator(), 3);
     ///
@@ -265,7 +265,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// // Denominators are always positive (sign is in numerator)
     /// assert_eq!(Rational::new(-2, 5).denominator(), 5);
     ///
@@ -285,7 +285,7 @@ impl Rational {
 /// # Examples
 ///
 /// ```
-/// # use danwi::rational::Rational;
+/// # use danwi::Rational;
 /// // Integers display without denominator
 /// assert_eq!(format!("{}", Rational::new_int(5)), "5");
 /// assert_eq!(format!("{}", Rational::new_int(-3)), "-3");
@@ -312,7 +312,7 @@ impl fmt::Display for Rational {
 /// # Examples
 ///
 /// ```
-/// # use danwi::rational::Rational;
+/// # use danwi::Rational;
 /// // Integers display without denominator
 /// assert_eq!(format!("{:?}", Rational::new_int(5)), "5");
 /// assert_eq!(format!("{:?}", Rational::new_int(-3)), "-3");

@@ -4,7 +4,8 @@
 //! offering different trade-offs between precision, range, and performance.
 
 use super::{RationalStorage, Storage};
-use std::convert::TryFrom;
+use crate::sealed::Sealed;
+use core::convert::TryFrom;
 
 /// Internal macro to generate floating-point storage implementations.
 macro_rules! impl_float_storage {
@@ -106,6 +107,9 @@ macro_rules! impl_float_storage {
 
 impl_float_storage!(F32Storage, f32);
 impl_float_storage!(F64Storage, f64);
+
+impl Sealed for F32Storage {}
+impl Sealed for F64Storage {}
 
 impl From<F32Storage> for f64 {
     fn from(storage: F32Storage) -> f64 {

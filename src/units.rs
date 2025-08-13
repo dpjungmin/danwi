@@ -1,7 +1,7 @@
 //! Common SI units.
 
 use crate::{
-    quantity::{self, Quantity},
+    quantity::{self, OscillatoryContext, Quantity, RotationalContext},
     storage::{F32Storage, F64Storage, RationalStorage},
 };
 
@@ -27,10 +27,10 @@ pub type ElectricCharge = Quantity<F64Storage, quantity::ElectricCharge>;
 pub type Voltage = Quantity<F64Storage, quantity::Voltage>;
 pub type Capacitance = Quantity<F64Storage, quantity::Capacitance>;
 pub type Resistance = Quantity<F64Storage, quantity::Resistance>;
-pub type Frequency = Quantity<F64Storage, quantity::Frequency>;
+pub type Frequency = Quantity<F64Storage, quantity::InverseTime, OscillatoryContext>;
 pub type Momentum = Quantity<F64Storage, quantity::Momentum>;
 pub type Density = Quantity<F64Storage, quantity::Density>;
-pub type AngularVelocity = Quantity<F64Storage, quantity::AngularVelocity>;
+pub type AngularVelocity = Quantity<F64Storage, quantity::InverseTime, RotationalContext>;
 
 // Type aliases for F32 storage variants
 pub type LengthF32 = Quantity<F32Storage, quantity::Length>;
@@ -54,10 +54,10 @@ pub type ElectricChargeF32 = Quantity<F32Storage, quantity::ElectricCharge>;
 pub type VoltageF32 = Quantity<F32Storage, quantity::Voltage>;
 pub type CapacitanceF32 = Quantity<F32Storage, quantity::Capacitance>;
 pub type ResistanceF32 = Quantity<F32Storage, quantity::Resistance>;
-pub type FrequencyF32 = Quantity<F32Storage, quantity::Frequency>;
+pub type FrequencyF32 = Quantity<F32Storage, quantity::InverseTime, OscillatoryContext>;
 pub type MomentumF32 = Quantity<F32Storage, quantity::Momentum>;
 pub type DensityF32 = Quantity<F32Storage, quantity::Density>;
-pub type AngularVelocityF32 = Quantity<F32Storage, quantity::AngularVelocity>;
+pub type AngularVelocityF32 = Quantity<F32Storage, quantity::InverseTime, RotationalContext>;
 
 // Type aliases for Rational storage variants
 pub type LengthRational = Quantity<RationalStorage, quantity::Length>;
@@ -81,10 +81,36 @@ pub type ElectricChargeRational = Quantity<RationalStorage, quantity::ElectricCh
 pub type VoltageRational = Quantity<RationalStorage, quantity::Voltage>;
 pub type CapacitanceRational = Quantity<RationalStorage, quantity::Capacitance>;
 pub type ResistanceRational = Quantity<RationalStorage, quantity::Resistance>;
-pub type FrequencyRational = Quantity<RationalStorage, quantity::Frequency>;
+pub type FrequencyRational = Quantity<RationalStorage, quantity::InverseTime, OscillatoryContext>;
 pub type MomentumRational = Quantity<RationalStorage, quantity::Momentum>;
 pub type DensityRational = Quantity<RationalStorage, quantity::Density>;
-pub type AngularVelocityRational = Quantity<RationalStorage, quantity::AngularVelocity>;
+pub type AngularVelocityRational =
+    Quantity<RationalStorage, quantity::InverseTime, RotationalContext>;
+
+// Conversion methods for semantic contexts
+use core::f64::consts::TAU;
+
+impl<S: crate::storage::Storage + Copy> Quantity<S, quantity::InverseTime, OscillatoryContext> {
+    /// Convert frequency to angular velocity (ω = 2πf)
+    pub fn to_angular_velocity(self) -> Quantity<S, quantity::InverseTime, RotationalContext>
+    where
+        S: From<f64>,
+    {
+        let new_storage = self.storage().mul(&S::from(TAU));
+        Quantity::new(new_storage)
+    }
+}
+
+impl<S: crate::storage::Storage + Copy> Quantity<S, quantity::InverseTime, RotationalContext> {
+    /// Convert angular velocity to frequency (f = ω/2π)
+    pub fn to_frequency(self) -> Quantity<S, quantity::InverseTime, OscillatoryContext>
+    where
+        S: From<f64>,
+    {
+        let new_storage = self.storage().div(&S::from(TAU));
+        Quantity::new(new_storage)
+    }
+}
 
 /// SI base unit constants for meter
 pub mod meter {

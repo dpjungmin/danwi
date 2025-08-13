@@ -56,7 +56,7 @@ fn max_denominator_is_respected() {
     assert!(d <= 2);
 
     // Pi with small denominator
-    let (n, d) = cfa(std::f64::consts::PI, 10).unwrap();
+    let (n, d) = cfa(core::f64::consts::PI, 10).unwrap();
     assert!(d <= 10);
     assert_eq!((n, d), (22, 7));
 }

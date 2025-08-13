@@ -3,6 +3,7 @@ default:
 
 alias b := build
 alias d := docs
+alias di := docs-internal
 alias t := test
 
 build:
@@ -25,6 +26,9 @@ sort:
 
 docs:
 	cargo doc --workspace --open
+
+docs-internal:
+	cargo doc --workspace --open --document-private-items
 
 test:
 	cargo test --workspace

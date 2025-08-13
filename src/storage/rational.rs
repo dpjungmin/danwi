@@ -4,9 +4,8 @@
 //! eliminating rounding errors inherent in floating-point arithmetic.
 
 use super::Storage;
-use crate::rational::Rational;
-use core::fmt;
-use std::convert::TryFrom;
+use crate::{rational::Rational, sealed::Sealed};
+use core::{convert::TryFrom, fmt};
 
 /// Storage using rational numbers for exact arithmetic.
 ///
@@ -51,6 +50,8 @@ impl RationalStorage {
         self.value.denominator()
     }
 }
+
+impl Sealed for RationalStorage {}
 
 impl Storage for RationalStorage {
     type Value = Rational;

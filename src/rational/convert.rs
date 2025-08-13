@@ -17,7 +17,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// let pi = Rational::try_from_f64_limited(std::f64::consts::PI, 100).unwrap();
     /// assert!(pi.denominator() <= 100);
     /// assert_eq!(pi, Rational::new(22, 7));
@@ -66,7 +66,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// let pi = Rational::try_from_f64(std::f64::consts::PI).unwrap();
     /// assert!(pi.denominator() <= 1e12 as _);
     /// assert!((pi.to_f64() - std::f64::consts::PI).abs() < 1e-12);
@@ -101,7 +101,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// let pi_simple = Rational::from_f64_limited(std::f64::consts::PI, 100);
     /// assert!(pi_simple.denominator() <= 100);
     /// assert!((pi_simple.to_f64() - std::f64::consts::PI).abs() < 1e-2);
@@ -114,22 +114,22 @@ impl Rational {
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::from_f64_limited(f64::NAN, 1000);
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::from_f64_limited(f64::INFINITY, 1000);
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::from_f64_limited(f64::NEG_INFINITY, 1000);
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::from_f64_limited(f64::MAX, 1000);
     /// ```
     pub fn from_f64_limited(value: f64, max_denominator: u128) -> Self {
@@ -154,7 +154,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// let one_third = Rational::from_f64(1.0 / 3.0);
     /// assert_eq!(one_third.numerator(), 1);
     /// assert_eq!(one_third.denominator(), 3);
@@ -167,22 +167,22 @@ impl Rational {
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::from_f64(f64::NAN);
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::from_f64(f64::INFINITY);
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::from_f64(f64::NEG_INFINITY);
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::from_f64(f64::MAX);
     /// ```
     pub fn from_f64(value: f64) -> Self {
@@ -197,7 +197,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// let one_third = Rational::new(1, 3);
     /// assert!((one_third.to_f64() - 0.333333333333333).abs() < 1e-15);
     ///
@@ -220,7 +220,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// let big = Rational::new(16_777_217, 1); // 2^24 + 1
     /// // f32 can't represent this exactly (only 24 bits mantissa)
     /// assert_eq!(big.to_f32(), 16_777_216.0_f32);
@@ -242,7 +242,7 @@ impl TryFrom<f32> for Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// # use core::convert::TryFrom;
     /// assert_eq!(Rational::try_from(0.5_f32), Ok(Rational::new(1, 2)));
     /// assert_eq!(Rational::try_from(0.25_f32), Ok(Rational::new(1, 4)));
@@ -267,7 +267,7 @@ impl TryFrom<f64> for Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// # use core::convert::TryFrom;
     /// assert_eq!(Rational::try_from(0.5), Ok(Rational::new(1, 2)));
     /// assert_eq!(Rational::try_from(0.25), Ok(Rational::new(1, 4)));
@@ -289,7 +289,7 @@ impl From<i32> for Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// let five: Rational = 5_i32.into();
     /// assert_eq!(five, Rational::new(5, 1));
     ///
@@ -309,7 +309,7 @@ impl From<i64> for Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// let five: Rational = 5_i64.into();
     /// assert_eq!(five, Rational::new(5, 1));
     ///
@@ -372,7 +372,8 @@ pub(super) fn continued_fraction_approximation(
     let mut x = value;
     let mut h_prev = 1u128;
     let mut k_prev = 0u128;
-    let mut h = x.floor() as u128; // first coefficient (integer part)
+    // Extract integer part (we know x is positive and < u128::MAX)
+    let mut h = x as u128; // truncation gives floor for positive numbers
     let mut k = 1u128;
 
     // Iterate at most 100 times to prevent infinite loops (complex irrationals
@@ -386,8 +387,8 @@ pub(super) fn continued_fraction_approximation(
             break;
         }
 
-        // Extract fractional part
-        x = x - x.floor();
+        // Extract fractional part (x is positive, truncation gives floor)
+        x = x - (x as u128 as f64);
 
         // Stop if fractional part is smaller than 1e-15 to avoid overflow in
         // reciprocal
@@ -403,8 +404,8 @@ pub(super) fn continued_fraction_approximation(
             break;
         }
 
-        // Next coefficient
-        let ai = x.floor() as u128;
+        // Next coefficient (x is positive after reciprocal)
+        let ai = x as u128;
 
         // Calculate next convergent using recurrence relation:
         // - h_n = a_n * h_{n-1} + h_{n-2}

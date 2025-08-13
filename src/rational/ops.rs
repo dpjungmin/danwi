@@ -17,7 +17,7 @@ impl Add for Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// assert_eq!(Rational::new(1, 2) + Rational::new(1, 3), Rational::new(5, 6));
     /// assert_eq!(Rational::new(1, 4) + Rational::new(3, 4), Rational::new(1, 1));
     /// assert_eq!(Rational::new(-1, 2) + Rational::new(1, 3), Rational::new(-1, 6));
@@ -25,7 +25,7 @@ impl Add for Rational {
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::new_int(i128::MAX) + Rational::new_int(1);
     /// ```
     fn add(self, other: Self) -> Self {
@@ -47,7 +47,7 @@ impl Sub for Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// assert_eq!(Rational::new(3, 4) - Rational::new(1, 2), Rational::new(1, 4));
     /// assert_eq!(Rational::new(1, 3) - Rational::new(1, 2), Rational::new(-1, 6));
     /// assert_eq!(Rational::new(5, 7) - Rational::new(5, 7), Rational::zero());
@@ -55,7 +55,7 @@ impl Sub for Rational {
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::new_int(i128::MIN) - Rational::new_int(1);
     /// ```
     fn sub(self, other: Self) -> Self {
@@ -77,7 +77,7 @@ impl Mul for Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// assert_eq!(Rational::new(2, 3) * Rational::new(3, 4), Rational::new(1, 2));
     /// assert_eq!(Rational::new(6, 8) * Rational::new(4, 3), Rational::new(1, 1));
     /// assert_eq!(Rational::new(-2, 5) * Rational::new(5, 2), Rational::new(-1, 1));
@@ -85,12 +85,12 @@ impl Mul for Rational {
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::new_int(i128::MAX) * Rational::new_int(2);
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::new_int(i128::MIN) * Rational::new_int(2);
     /// ```
     fn mul(self, other: Self) -> Self {
@@ -114,7 +114,7 @@ impl Div for Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// assert_eq!(Rational::new(2, 3) / Rational::new(4, 5), Rational::new(5, 6));
     /// assert_eq!(Rational::new(6, 7) / Rational::new(2, 7), Rational::new(3, 1));
     /// assert_eq!(Rational::new(-1, 2) / Rational::new(1, 3), Rational::new(-3, 2));
@@ -122,12 +122,12 @@ impl Div for Rational {
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::new(1, 2) / Rational::zero();
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// Rational::new_int(i128::MAX) / Rational::new(1, u128::MAX);
     /// ```
     fn div(self, other: Self) -> Self {
@@ -147,7 +147,7 @@ impl Neg for Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// assert_eq!(-Rational::new(2, 3), Rational::new(-2, 3));
     /// assert_eq!(-Rational::new(-5, 7), Rational::new(5, 7));
     /// assert_eq!(-Rational::zero(), Rational::zero());
@@ -155,7 +155,7 @@ impl Neg for Rational {
     /// ```
     ///
     /// ```should_panic
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// -Rational::new_int(i128::MIN);
     /// ```
     fn neg(self) -> Self {
@@ -169,7 +169,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// assert_eq!(Rational::new(1, 2).checked_add(&Rational::new(1, 3)), Some(Rational::new(5, 6)));
     /// assert_eq!(Rational::new(1, 4).checked_add(&Rational::new(3, 4)), Some(Rational::new(1, 1)));
     /// assert_eq!(Rational::new(-1, 2).checked_add(&Rational::new(1, 3)), Some(Rational::new(-1, 6)));
@@ -203,7 +203,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// assert_eq!(Rational::new(3, 4).checked_sub(&Rational::new(1, 2)), Some(Rational::new(1, 4)));
     /// assert_eq!(Rational::new(1, 3).checked_sub(&Rational::new(1, 2)), Some(Rational::new(-1, 6)));
     /// assert_eq!(Rational::new(5, 7).checked_sub(&Rational::new(5, 7)), Some(Rational::zero()));
@@ -225,7 +225,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// assert_eq!(Rational::new(2, 3).checked_mul(&Rational::new(3, 4)), Some(Rational::new(1, 2)));
     /// assert_eq!(Rational::new(6, 8).checked_mul(&Rational::new(4, 3)), Some(Rational::new(1, 1)));
     /// assert_eq!(Rational::new(-2, 5).checked_mul(&Rational::new(5, 2)), Some(Rational::new(-1, 1)));
@@ -259,7 +259,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// assert_eq!(Rational::new(2, 3).checked_div(&Rational::new(4, 5)), Some(Rational::new(5, 6)));
     /// assert_eq!(Rational::new(6, 7).checked_div(&Rational::new(2, 7)), Some(Rational::new(3, 1)));
     /// assert_eq!(Rational::new(-1, 2).checked_div(&Rational::new(1, 3)), Some(Rational::new(-3, 2)));
@@ -285,7 +285,7 @@ impl Rational {
     /// # Examples
     ///
     /// ```
-    /// # use danwi::rational::Rational;
+    /// # use danwi::Rational;
     /// assert_eq!(Rational::new(2, 3).checked_neg(), Some(Rational::new(-2, 3)));
     /// assert_eq!(Rational::new(-5, 7).checked_neg(), Some(Rational::new(5, 7)));
     /// assert_eq!(Rational::zero().checked_neg(), Some(Rational::zero()));

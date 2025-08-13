@@ -5,7 +5,8 @@
 //! dimensional type safety. This design enables users to choose the most
 //! appropriate numeric representation for their specific use case.
 
-use std::fmt::Debug;
+use crate::sealed::Sealed;
+use core::fmt::Debug;
 
 pub mod float;
 pub mod rational;
@@ -19,7 +20,9 @@ pub use rational::RationalStorage;
 /// in memory and how arithmetic operations are performed. This abstraction
 /// allows the same dimensional analysis to work with different
 /// numeric representations.
-pub trait Storage: Clone + Debug + PartialEq + Sized {
+///
+/// This trait is sealed and cannot be implemented outside this crate.
+pub trait Storage: Clone + Debug + PartialEq + Sized + Sealed {
     /// The underlying numeric type (f32, f64, Rational, etc.).
     ///
     /// This type represents the actual value stored in memory.
