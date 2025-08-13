@@ -216,7 +216,6 @@ where
 ///
 /// This macro generates dimension types and implements multiplication/division
 /// rules between them to ensure compile-time dimensional correctness.
-#[macro_export]
 macro_rules! define_dimensions {
     (
         base_dimensions: {
