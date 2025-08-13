@@ -18,10 +18,10 @@ impl Rational {
     ///
     /// ```
     /// # use danwi::Rational;
-    /// let pi = Rational::try_from_f64_limited(std::f64::consts::PI, 100).unwrap();
+    /// let pi = Rational::try_from_f64_limited(core::f64::consts::PI, 100).unwrap();
     /// assert!(pi.denominator() <= 100);
     /// assert_eq!(pi, Rational::new(22, 7));
-    /// assert!((pi.to_f64() - std::f64::consts::PI).abs() < 1e-2);
+    /// assert!((pi.to_f64() - core::f64::consts::PI).abs() < 1e-2);
     ///
     /// assert_eq!(Rational::try_from_f64_limited(0.5, 1000), Some(Rational::new(1, 2)));
     /// assert_eq!(Rational::try_from_f64_limited(-0.5, 1000), Some(Rational::new(-1, 2)));
@@ -67,9 +67,9 @@ impl Rational {
     ///
     /// ```
     /// # use danwi::Rational;
-    /// let pi = Rational::try_from_f64(std::f64::consts::PI).unwrap();
+    /// let pi = Rational::try_from_f64(core::f64::consts::PI).unwrap();
     /// assert!(pi.denominator() <= 1e12 as _);
-    /// assert!((pi.to_f64() - std::f64::consts::PI).abs() < 1e-12);
+    /// assert!((pi.to_f64() - core::f64::consts::PI).abs() < 1e-12);
     ///
     /// assert_eq!(Rational::try_from_f64(0.5), Some(Rational::new(1, 2)));
     /// assert_eq!(Rational::try_from_f64(-0.5), Some(Rational::new(-1, 2)));
@@ -102,9 +102,9 @@ impl Rational {
     ///
     /// ```
     /// # use danwi::Rational;
-    /// let pi_simple = Rational::from_f64_limited(std::f64::consts::PI, 100);
+    /// let pi_simple = Rational::from_f64_limited(core::f64::consts::PI, 100);
     /// assert!(pi_simple.denominator() <= 100);
-    /// assert!((pi_simple.to_f64() - std::f64::consts::PI).abs() < 1e-2);
+    /// assert!((pi_simple.to_f64() - core::f64::consts::PI).abs() < 1e-2);
     ///
     /// assert_eq!(Rational::from_f64_limited(0.5, 1000), Rational::new(1, 2));
     /// assert_eq!(Rational::from_f64_limited(-0.5, 1000), Rational::new(-1, 2));
