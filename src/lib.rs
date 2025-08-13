@@ -1,21 +1,15 @@
 #![no_std]
+#![forbid(unsafe_code)]
+#![doc = include_str!("../README.md")]
 
-pub(crate) mod quantity;
-pub(crate) mod rational;
-pub(crate) mod sealed;
-pub(crate) mod storage;
-
-pub mod constants;
-pub mod extensions;
+pub mod dimension;
+pub mod quantity;
+pub mod scalar;
 pub mod units;
 
-pub use crate::rational::Rational;
+mod sealed;
+pub(crate) use sealed::Sealed;
 
 pub mod prelude {
-    pub use crate::{
-        constants::*,
-        extensions::QuantityExtensions,
-        quantity::{LinearContext, OscillatoryContext, Quantity, RotationalContext, TorqueContext},
-        units::*,
-    };
+    pub use crate::units::{constants::*, types::*, *};
 }

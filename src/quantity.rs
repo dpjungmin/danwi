@@ -1,396 +1,104 @@
-//! Quantity implementation for dimension combinations.
-
 use crate::{
-    sealed::Sealed,
-    storage::{F32Storage, F64Storage, RationalStorage, Storage},
+    scalar::{F32Scalar, F64Scalar, Scalar},
+    units::{BaseUnit, DimensionEq, Divide, Multiply, SameDimension, Unit},
 };
 use core::{
-    fmt,
     marker::PhantomData,
-    ops::{Add, Div, Mul, Neg, Sub},
+    ops::{Div, Mul},
 };
 
-/// Dimension trait for marker types
-///
-/// This trait is sealed and cannot be implemented outside this crate.
-pub trait Dimension: Clone + Copy + fmt::Debug + 'static + Sealed {
-    const SYMBOL: &'static str;
+#[derive(Debug, Clone, Copy)]
+pub struct Quantity<S: Scalar, U: Unit> {
+    pub(crate) value: S,
+    _phantom: PhantomData<U>,
 }
 
-/// Context trait for semantic meaning of quantities
-///
-/// This trait is sealed and cannot be implemented outside this crate.
-pub trait Context: Clone + Copy + fmt::Debug + 'static + Sealed {
-    /// Optional name for the context (e.g., "Oscillatory", "Rotational")
-    const NAME: &'static str;
-}
-
-/// Default context for quantities without semantic distinctions
-impl Sealed for () {}
-impl Context for () {
-    const NAME: &'static str = "";
-}
-
-/// Context for oscillatory quantities (e.g., frequency)
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct OscillatoryContext;
-
-impl Sealed for OscillatoryContext {}
-impl Context for OscillatoryContext {
-    const NAME: &'static str = "Oscillatory";
-}
-
-/// Context for rotational quantities (e.g., angular velocity)
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct RotationalContext;
-
-impl Sealed for RotationalContext {}
-impl Context for RotationalContext {
-    const NAME: &'static str = "Rotational";
-}
-
-/// Context for linear energy (work, kinetic energy)
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct LinearContext;
-
-impl Sealed for LinearContext {}
-impl Context for LinearContext {
-    const NAME: &'static str = "Linear";
-}
-
-/// Context for torque (rotational force)
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct TorqueContext;
-
-impl Sealed for TorqueContext {}
-impl Context for TorqueContext {
-    const NAME: &'static str = "Torque";
-}
-
-/// A physical quantity with compile-time dimensional analysis and optional
-/// semantic context.
-///
-/// # Examples
-///
-/// ```compile_fail
-/// use danwi::prelude::*;
-///
-/// let freq = Frequency::from_f64(50.0);
-/// let angular = AngularVelocity::from_f64(100.0);
-///
-/// // This will not compile - different contexts!
-/// let invalid = freq + angular;  // ERROR: type mismatch
-/// ```
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Quantity<S: Storage + Copy, D: Dimension, C: Context = ()> {
-    storage: S,
-    _phantom: PhantomData<(D, C)>,
-}
-
-impl<S: Storage + Copy, D: Dimension, C: Context> Quantity<S, D, C> {
-    pub const fn new(storage: S) -> Self {
+impl<S: Scalar, U: Unit> Quantity<S, U> {
+    pub const fn new(value: S) -> Self {
         Self {
-            storage,
+            value,
             _phantom: PhantomData,
         }
     }
 
     pub fn value(&self) -> S::Value {
-        self.storage.raw_value()
+        self.value.get()
     }
 
-    pub fn storage(&self) -> &S {
-        &self.storage
-    }
-
-    pub fn without_context(self) -> Quantity<S, D, ()> {
-        Quantity::new(self.storage)
-    }
-
-    pub fn with_context<C2: Context>(self) -> Quantity<S, D, C2> {
-        Quantity::new(self.storage)
+    pub fn to<T: Unit>(self) -> Quantity<S, T>
+    where
+        DimensionEq<U, T>: SameDimension<U, T>,
+    {
+        let prefix_diff = U::PREFIX - T::PREFIX;
+        let scaled_value = self.value.scale_by_power_of_10(prefix_diff);
+        Quantity::new(scaled_value)
     }
 }
 
-impl<D: Dimension, C: Context> Quantity<F32Storage, D, C> {
-    pub const fn from_f32(value: f32) -> Self {
-        Self::new(F32Storage::new(value))
+impl<U: Unit> From<f64> for Quantity<F64Scalar, U> {
+    fn from(value: f64) -> Self {
+        Self::new(F64Scalar::new(value))
     }
 }
 
-impl<D: Dimension, C: Context> Quantity<F64Storage, D, C> {
-    pub const fn from_f64(value: f64) -> Self {
-        Self::new(F64Storage::new(value))
+impl<U: Unit> From<f32> for Quantity<F32Scalar, U> {
+    fn from(value: f32) -> Self {
+        Self::new(F32Scalar::new(value))
     }
 }
 
-impl<D: Dimension, C: Context> Quantity<RationalStorage, D, C> {
-    pub fn from_ratio(numerator: i128, denominator: u128) -> Self {
-        Self::new(RationalStorage::from_ratio(numerator, denominator))
-    }
+type BaseOf<U> = <U as BaseUnit>::Base;
+type ProductOf<U1, U2> = <U1 as Multiply<U2>>::Output;
+type QuotientOf<U1, U2> = <U1 as Divide<U2>>::Output;
 
-    pub fn from_int(value: i128) -> Self {
-        Self::new(RationalStorage::from_int(value))
-    }
-}
-
-impl<S: Storage + Copy, D: Dimension, C: Context> Add for Quantity<S, D, C> {
-    type Output = Self;
-
-    fn add(self, other: Self) -> Self::Output {
-        Self::new(self.storage.add(&other.storage))
-    }
-}
-
-impl<S: Storage + Copy, D: Dimension, C: Context> Sub for Quantity<S, D, C> {
-    type Output = Self;
-
-    fn sub(self, other: Self) -> Self::Output {
-        Self::new(self.storage.sub(&other.storage))
-    }
-}
-
-impl<S: Storage + Copy, D: Dimension, C: Context> Neg for Quantity<S, D, C> {
-    type Output = Self;
-
-    fn neg(self) -> Self::Output {
-        Self::new(self.storage.neg())
-    }
-}
-
-// quantity * scalar
-impl<S: Storage + Copy, D: Dimension, C: Context> Mul<f64> for Quantity<S, D, C>
+impl<S, U1, U2> Mul<Quantity<S, U2>> for Quantity<S, U1>
 where
-    S: From<f64>,
+    S: Scalar,
+    U1: Unit + BaseUnit,
+    U2: Unit + BaseUnit,
+    BaseOf<U1>: Multiply<BaseOf<U2>>,
+    DimensionEq<U1, BaseOf<U1>>: SameDimension<U1, BaseOf<U1>>,
+    DimensionEq<U2, BaseOf<U2>>: SameDimension<U2, BaseOf<U2>>,
 {
-    type Output = Self;
+    type Output = Quantity<S, ProductOf<BaseOf<U1>, BaseOf<U2>>>;
 
-    fn mul(self, scalar: f64) -> Self::Output {
-        Self::new(self.storage.mul(&S::from(scalar)))
+    fn mul(self, rhs: Quantity<S, U2>) -> Self::Output {
+        let base_lhs = self.to::<<U1 as BaseUnit>::Base>();
+        let base_rhs = rhs.to::<<U2 as BaseUnit>::Base>();
+        Quantity::new(base_lhs.value.mul(&base_rhs.value))
     }
 }
 
-// scalar * quantity
-impl<S: Storage + Copy, D: Dimension, C: Context> Mul<Quantity<S, D, C>> for f64
+impl<S, U1, U2> Div<Quantity<S, U2>> for Quantity<S, U1>
 where
-    S: From<f64>,
+    S: Scalar,
+    U1: Unit + BaseUnit,
+    U2: Unit + BaseUnit,
+    BaseOf<U1>: Divide<BaseOf<U2>>,
+    DimensionEq<U1, BaseOf<U1>>: SameDimension<U1, BaseOf<U1>>,
+    DimensionEq<U2, BaseOf<U2>>: SameDimension<U2, BaseOf<U2>>,
 {
-    type Output = Quantity<S, D, C>;
+    type Output = Quantity<S, QuotientOf<BaseOf<U1>, BaseOf<U2>>>;
 
-    fn mul(self, quantity: Quantity<S, D, C>) -> Self::Output {
-        quantity * self
+    fn div(self, rhs: Quantity<S, U2>) -> Self::Output {
+        let base_lhs = self.to::<<U1 as BaseUnit>::Base>();
+        let base_rhs = rhs.to::<<U2 as BaseUnit>::Base>();
+        Quantity::new(base_lhs.value.div(&base_rhs.value))
     }
 }
 
-impl<S: Storage + Copy, D: Dimension, C: Context> Div<f64> for Quantity<S, D, C>
+impl<S, U1, U2> PartialEq<Quantity<S, U2>> for Quantity<S, U1>
 where
-    S: From<f64>,
+    S: Scalar + PartialEq + Copy,
+    U1: Unit + BaseUnit,
+    U2: Unit + BaseUnit,
+    DimensionEq<BaseOf<U1>, BaseOf<U2>>: SameDimension<BaseOf<U1>, BaseOf<U2>>,
+    DimensionEq<U1, BaseOf<U1>>: SameDimension<U1, BaseOf<U1>>,
+    DimensionEq<U2, BaseOf<U2>>: SameDimension<U2, BaseOf<U2>>,
 {
-    type Output = Self;
-
-    fn div(self, scalar: f64) -> Self::Output {
-        Self::new(self.storage.div(&S::from(scalar)))
-    }
-}
-
-impl<S: Storage + Copy, D: Dimension, C: Context> fmt::Display for Quantity<S, D, C>
-where
-    S::Value: fmt::Display,
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if C::NAME.is_empty() {
-            write!(f, "{} {}", self.storage.raw_value(), D::SYMBOL)
-        } else {
-            write!(
-                f,
-                "{} {} ({})",
-                self.storage.raw_value(),
-                D::SYMBOL,
-                C::NAME
-            )
-        }
-    }
-}
-
-/// Macro for defining dimensions and their arithmetic relationships.
-///
-/// This macro generates dimension types and implements multiplication/division
-/// rules between them to ensure compile-time dimensional correctness.
-#[macro_export]
-macro_rules! define_dimensions {
-    (
-        base_dimensions: {
-            $($base:ident: $base_symbol:literal),* $(,)?
-        }
-        derived_dimensions: {
-            $(
-                $derived:ident: $derived_symbol:literal = $derived_expr:expr
-            ),* $(,)?
-        }
-        multiplication_rules: {
-            $(
-                $lhs:ident * $rhs:ident = $result:ident
-            ),* $(,)?
-        }
-        division_rules: {
-            $(
-                $num:ident / $den:ident = $quot:ident
-            ),* $(,)?
-        }
-    ) => {
-        // Define base dimension marker types
-        $(
-            #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-            pub struct $base;
-
-            impl $crate::sealed::Sealed for $base {}
-            impl Dimension for $base {
-                const SYMBOL: &'static str = $base_symbol;
-            }
-        )*
-
-        // Define derived dimension marker types
-        $(
-            #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-            pub struct $derived;
-
-            impl $crate::sealed::Sealed for $derived {}
-            impl Dimension for $derived {
-                const SYMBOL: &'static str = $derived_symbol;
-            }
-        )*
-
-        // Implement multiplication rules
-        // When multiplying quantities with contexts, the result has no context (default)
-        $(
-            impl<S: Storage + Copy, C1: Context, C2: Context> Mul<Quantity<S, $rhs, C2>> for Quantity<S, $lhs, C1> {
-                type Output = Quantity<S, $result, ()>;
-
-                fn mul(self, other: Quantity<S, $rhs, C2>) -> Self::Output {
-                    Quantity::new(self.storage.mul(&other.storage))
-                }
-            }
-        )*
-
-        // Implement division rules
-        // When dividing quantities with contexts, the result has no context (default)
-        $(
-            impl<S: Storage + Copy, C1: Context, C2: Context> Div<Quantity<S, $den, C2>> for Quantity<S, $num, C1> {
-                type Output = Quantity<S, $quot, ()>;
-
-                fn div(self, other: Quantity<S, $den, C2>) -> Self::Output {
-                    Quantity::new(self.storage.div(&other.storage))
-                }
-            }
-        )*
-    };
-}
-
-define_dimensions! {
-    base_dimensions: {
-        Length: "m",
-        Mass: "kg",
-        Time: "s",
-        ElectricCurrent: "A",
-        Temperature: "K",
-        AmountOfSubstance: "mol",
-        LuminousIntensity: "cd",
-        Dimensionless: "",
-    }
-
-    derived_dimensions: {
-        Area: "m²" = "L²",
-        Volume: "m³" = "L³",
-        Velocity: "m/s" = "L/T",
-        Acceleration: "m/s²" = "L/T²",
-        Force: "N" = "M·L/T²",
-        Energy: "J" = "M·L²/T²",
-        Power: "W" = "M·L²/T³",
-        Pressure: "Pa" = "M/(L·T²)",
-        ElectricCharge: "C" = "I·T",
-        Voltage: "V" = "M·L²/(T³·I)",
-        Capacitance: "F" = "I²·T⁴/(M·L²)",
-        Resistance: "Ω" = "M·L²/(T³·I²)",
-        InverseTime: "1/T" = "1/T",  // Base for both Frequency and AngularVelocity
-        Momentum: "kg·m/s" = "M·L/T",
-        Density: "kg/m³" = "M/L³",
-    }
-
-    multiplication_rules: {
-        // Basic mechanics
-        Mass * Acceleration = Force,
-        Force * Length = Energy,
-        Mass * Velocity = Momentum,
-        Momentum * Velocity = Energy,
-        Force * Time = Momentum,
-
-        // Velocity and time
-        Velocity * Time = Length,
-        Acceleration * Time = Velocity,
-
-        // Density and volume
-        Density * Volume = Mass,
-
-        // Angular mechanics
-
-        // Electrical
-        ElectricCurrent * Resistance = Voltage,
-        Voltage * ElectricCurrent = Power,
-        ElectricCurrent * Voltage = Power,  // Both orderings
-        ElectricCurrent * Time = ElectricCharge,
-        Resistance * Capacitance = Time,
-
-        // Energy from power
-        Power * Time = Energy,
-
-        // InverseTime (Frequency/AngularVelocity)
-        InverseTime * Time = Dimensionless,
-
-        // Areas and volumes
-        Length * Length = Area,
-        Area * Length = Volume,
-        Length * Area = Volume
-    }
-
-    division_rules: {
-        // Basic mechanics
-        Force / Mass = Acceleration,
-        Energy / Force = Length,
-        Power / Energy = InverseTime,
-        Pressure / Force = Area,
-        Energy / Length = Force,
-        Momentum / Mass = Velocity,
-        Momentum / Velocity = Mass,
-        Energy / Velocity = Momentum,
-        Momentum / Time = Force,
-
-        // Density
-        Mass / Volume = Density,
-        Mass / Density = Volume,
-
-        // Velocity and distance
-        Length / Time = Velocity,
-        Velocity / Time = Acceleration,
-        Length / Velocity = Time,
-        Velocity / Acceleration = Time,
-
-        // Angular mechanics
-
-        // Electrical
-        Voltage / ElectricCurrent = Resistance,
-        Voltage / Resistance = ElectricCurrent,
-        Power / Voltage = ElectricCurrent,
-        Power / ElectricCurrent = Voltage,
-        ElectricCharge / Time = ElectricCurrent,
-        Time / Resistance = Capacitance,
-
-        // InverseTime
-        Dimensionless / Time = InverseTime,
-        Dimensionless / InverseTime = Time,
-
-        // Areas and volumes
-        Area / Length = Length,
-        Volume / Area = Length,
-        Volume / Length = Area
+    fn eq(&self, other: &Quantity<S, U2>) -> bool {
+        let base_lhs = self.to::<BaseOf<U1>>();
+        let base_rhs = other.to::<BaseOf<U2>>();
+        base_lhs.value == base_rhs.value
     }
 }

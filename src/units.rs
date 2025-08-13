@@ -1,427 +1,288 @@
-//! Common SI units.
-
 use crate::{
-    quantity::{self, OscillatoryContext, Quantity, RotationalContext},
-    storage::{F32Storage, F64Storage, RationalStorage},
+    Sealed,
+    dimension::{self, Dimension},
+    quantity::Quantity,
+    scalar::{F32Scalar, F64Scalar},
 };
+use core::{marker::PhantomData, ops::Mul};
+use paste::paste;
 
-// Base quantities
-pub type Length = Quantity<F64Storage, quantity::Length>;
-pub type Mass = Quantity<F64Storage, quantity::Mass>;
-pub type Time = Quantity<F64Storage, quantity::Time>;
-pub type ElectricCurrent = Quantity<F64Storage, quantity::ElectricCurrent>;
-pub type Temperature = Quantity<F64Storage, quantity::Temperature>;
-pub type AmountOfSubstance = Quantity<F64Storage, quantity::AmountOfSubstance>;
-pub type LuminousIntensity = Quantity<F64Storage, quantity::LuminousIntensity>;
-
-// Derived quantities
-pub type Area = Quantity<F64Storage, quantity::Area>;
-pub type Volume = Quantity<F64Storage, quantity::Volume>;
-pub type Velocity = Quantity<F64Storage, quantity::Velocity>;
-pub type Acceleration = Quantity<F64Storage, quantity::Acceleration>;
-pub type Force = Quantity<F64Storage, quantity::Force>;
-pub type Energy = Quantity<F64Storage, quantity::Energy>;
-pub type Power = Quantity<F64Storage, quantity::Power>;
-pub type Pressure = Quantity<F64Storage, quantity::Pressure>;
-pub type ElectricCharge = Quantity<F64Storage, quantity::ElectricCharge>;
-pub type Voltage = Quantity<F64Storage, quantity::Voltage>;
-pub type Capacitance = Quantity<F64Storage, quantity::Capacitance>;
-pub type Resistance = Quantity<F64Storage, quantity::Resistance>;
-pub type Frequency = Quantity<F64Storage, quantity::InverseTime, OscillatoryContext>;
-pub type Momentum = Quantity<F64Storage, quantity::Momentum>;
-pub type Density = Quantity<F64Storage, quantity::Density>;
-pub type AngularVelocity = Quantity<F64Storage, quantity::InverseTime, RotationalContext>;
-
-// Type aliases for F32 storage variants
-pub type LengthF32 = Quantity<F32Storage, quantity::Length>;
-pub type MassF32 = Quantity<F32Storage, quantity::Mass>;
-pub type TimeF32 = Quantity<F32Storage, quantity::Time>;
-pub type ElectricCurrentF32 = Quantity<F32Storage, quantity::ElectricCurrent>;
-pub type TemperatureF32 = Quantity<F32Storage, quantity::Temperature>;
-pub type AmountOfSubstanceF32 = Quantity<F32Storage, quantity::AmountOfSubstance>;
-pub type LuminousIntensityF32 = Quantity<F32Storage, quantity::LuminousIntensity>;
-
-// F32 derived quantities
-pub type AreaF32 = Quantity<F32Storage, quantity::Area>;
-pub type VolumeF32 = Quantity<F32Storage, quantity::Volume>;
-pub type VelocityF32 = Quantity<F32Storage, quantity::Velocity>;
-pub type AccelerationF32 = Quantity<F32Storage, quantity::Acceleration>;
-pub type ForceF32 = Quantity<F32Storage, quantity::Force>;
-pub type EnergyF32 = Quantity<F32Storage, quantity::Energy>;
-pub type PowerF32 = Quantity<F32Storage, quantity::Power>;
-pub type PressureF32 = Quantity<F32Storage, quantity::Pressure>;
-pub type ElectricChargeF32 = Quantity<F32Storage, quantity::ElectricCharge>;
-pub type VoltageF32 = Quantity<F32Storage, quantity::Voltage>;
-pub type CapacitanceF32 = Quantity<F32Storage, quantity::Capacitance>;
-pub type ResistanceF32 = Quantity<F32Storage, quantity::Resistance>;
-pub type FrequencyF32 = Quantity<F32Storage, quantity::InverseTime, OscillatoryContext>;
-pub type MomentumF32 = Quantity<F32Storage, quantity::Momentum>;
-pub type DensityF32 = Quantity<F32Storage, quantity::Density>;
-pub type AngularVelocityF32 = Quantity<F32Storage, quantity::InverseTime, RotationalContext>;
-
-// Type aliases for Rational storage variants
-pub type LengthRational = Quantity<RationalStorage, quantity::Length>;
-pub type MassRational = Quantity<RationalStorage, quantity::Mass>;
-pub type TimeRational = Quantity<RationalStorage, quantity::Time>;
-pub type ElectricCurrentRational = Quantity<RationalStorage, quantity::ElectricCurrent>;
-pub type TemperatureRational = Quantity<RationalStorage, quantity::Temperature>;
-pub type AmountOfSubstanceRational = Quantity<RationalStorage, quantity::AmountOfSubstance>;
-pub type LuminousIntensityRational = Quantity<RationalStorage, quantity::LuminousIntensity>;
-
-// Rational derived quantities
-pub type AreaRational = Quantity<RationalStorage, quantity::Area>;
-pub type VolumeRational = Quantity<RationalStorage, quantity::Volume>;
-pub type VelocityRational = Quantity<RationalStorage, quantity::Velocity>;
-pub type AccelerationRational = Quantity<RationalStorage, quantity::Acceleration>;
-pub type ForceRational = Quantity<RationalStorage, quantity::Force>;
-pub type EnergyRational = Quantity<RationalStorage, quantity::Energy>;
-pub type PowerRational = Quantity<RationalStorage, quantity::Power>;
-pub type PressureRational = Quantity<RationalStorage, quantity::Pressure>;
-pub type ElectricChargeRational = Quantity<RationalStorage, quantity::ElectricCharge>;
-pub type VoltageRational = Quantity<RationalStorage, quantity::Voltage>;
-pub type CapacitanceRational = Quantity<RationalStorage, quantity::Capacitance>;
-pub type ResistanceRational = Quantity<RationalStorage, quantity::Resistance>;
-pub type FrequencyRational = Quantity<RationalStorage, quantity::InverseTime, OscillatoryContext>;
-pub type MomentumRational = Quantity<RationalStorage, quantity::Momentum>;
-pub type DensityRational = Quantity<RationalStorage, quantity::Density>;
-pub type AngularVelocityRational =
-    Quantity<RationalStorage, quantity::InverseTime, RotationalContext>;
-
-// Conversion methods for semantic contexts
-use core::f64::consts::TAU;
-
-impl<S: crate::storage::Storage + Copy> Quantity<S, quantity::InverseTime, OscillatoryContext> {
-    /// Convert frequency to angular velocity (ω = 2πf)
-    pub fn to_angular_velocity(self) -> Quantity<S, quantity::InverseTime, RotationalContext>
-    where
-        S: From<f64>,
-    {
-        let new_storage = self.storage().mul(&S::from(TAU));
-        Quantity::new(new_storage)
-    }
+pub trait Unit: 'static + Copy {
+    const DIMENSION: Dimension;
+    const PREFIX: i8;
 }
 
-impl<S: crate::storage::Storage + Copy> Quantity<S, quantity::InverseTime, RotationalContext> {
-    /// Convert angular velocity to frequency (f = ω/2π)
-    pub fn to_frequency(self) -> Quantity<S, quantity::InverseTime, OscillatoryContext>
-    where
-        S: From<f64>,
-    {
-        let new_storage = self.storage().div(&S::from(TAU));
-        Quantity::new(new_storage)
-    }
+pub trait SameDimension<U1: Unit, U2: Unit> {}
+
+pub struct DimensionEq<U1: Unit, U2: Unit>(PhantomData<(U1, U2)>);
+
+impl<U: Unit> SameDimension<U, U> for DimensionEq<U, U> {}
+
+impl<U1: Unit, U2: Unit> Sealed for DimensionEq<U1, U2> {}
+
+pub trait BaseUnit: Unit {
+    type Base: Unit;
 }
 
-/// SI base unit constants for meter
-pub mod meter {
-    /// One meter (SI base unit of length)
-    pub const METER: f64 = 1.0;
-
-    // Metric prefixes
-    pub const KILOMETER: f64 = 1000.0;
-    pub const HECTOMETER: f64 = 100.0;
-    pub const DECAMETER: f64 = 10.0;
-    pub const DECIMETER: f64 = 0.1;
-    pub const CENTIMETER: f64 = 0.01;
-    pub const MILLIMETER: f64 = 0.001;
-    pub const MICROMETER: f64 = 1e-6;
-    pub const NANOMETER: f64 = 1e-9;
-
-    // Common imperial units
-    pub const INCH: f64 = 0.0254;
-    pub const FOOT: f64 = 0.3048;
-    pub const YARD: f64 = 0.9144;
-    pub const MILE: f64 = 1609.344;
+pub trait Multiply<Rhs: Unit>: Unit {
+    type Output: Unit;
 }
 
-/// SI base unit constants for kilogram
-pub mod kilogram {
-    /// One kilogram (SI base unit of mass)
-    pub const KILOGRAM: f64 = 1.0;
-
-    // Metric units
-    pub const GRAM: f64 = 0.001;
-    pub const MILLIGRAM: f64 = 1e-6;
-    pub const MICROGRAM: f64 = 1e-9;
-    pub const METRIC_TON: f64 = 1000.0;
-
-    // Imperial units
-    pub const POUND: f64 = 0.45359237;
-    pub const OUNCE: f64 = 0.028349523125;
+pub trait Divide<Rhs: Unit>: Unit {
+    type Output: Unit;
 }
 
-/// SI base unit constants for second
-pub mod second {
-    /// One second (SI base unit of time)
-    pub const SECOND: f64 = 1.0;
-
-    // Time units
-    pub const MILLISECOND: f64 = 0.001;
-    pub const MICROSECOND: f64 = 1e-6;
-    pub const NANOSECOND: f64 = 1e-9;
-    pub const MINUTE: f64 = 60.0;
-    pub const HOUR: f64 = 3600.0;
-    pub const DAY: f64 = 86400.0;
+mod prefixes {
+    pub(crate) const QUETTA: i8 = 30;
+    pub(crate) const RONNA: i8 = 27;
+    pub(crate) const YOTTA: i8 = 24;
+    pub(crate) const ZETTA: i8 = 21;
+    pub(crate) const EXA: i8 = 18;
+    pub(crate) const PETA: i8 = 15;
+    pub(crate) const TERA: i8 = 12;
+    pub(crate) const GIGA: i8 = 9;
+    pub(crate) const MEGA: i8 = 6;
+    pub(crate) const KILO: i8 = 3;
+    pub(crate) const HECTO: i8 = 2;
+    pub(crate) const DECA: i8 = 1;
+    pub(crate) const BASE: i8 = 0;
+    pub(crate) const DECI: i8 = -1;
+    pub(crate) const CENTI: i8 = -2;
+    pub(crate) const MILLI: i8 = -3;
+    pub(crate) const MICRO: i8 = -6;
+    pub(crate) const NANO: i8 = -9;
+    pub(crate) const PICO: i8 = -12;
+    pub(crate) const FEMTO: i8 = -15;
+    pub(crate) const ATTO: i8 = -18;
+    pub(crate) const ZEPTO: i8 = -21;
+    pub(crate) const YOCTO: i8 = -24;
+    pub(crate) const RONTO: i8 = -27;
+    pub(crate) const QUECTO: i8 = -30;
 }
 
-/// SI base unit constants for ampere
-pub mod ampere {
-    /// One ampere (SI base unit of electric current)
-    pub const AMPERE: f64 = 1.0;
+macro_rules! impl_unit {
+    ($name:ident, $base:ident, $dimension:expr, $prefix:expr) => {
+        #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+        pub struct $name;
 
-    // Common prefixes
-    pub const MILLIAMPERE: f64 = 0.001;
-    pub const MICROAMPERE: f64 = 1e-6;
+        impl Unit for $name {
+            const DIMENSION: Dimension = $dimension;
+            const PREFIX: i8 = $prefix;
+        }
+
+        impl BaseUnit for $name {
+            type Base = $base;
+        }
+
+        impl Mul<$name> for f32 {
+            type Output = Quantity<F32Scalar, $name>;
+
+            fn mul(self, _: $name) -> Self::Output {
+                Quantity::new(F32Scalar::new(self))
+            }
+        }
+
+        impl Mul<$name> for f64 {
+            type Output = Quantity<F64Scalar, $name>;
+
+            fn mul(self, _: $name) -> Self::Output {
+                Quantity::new(F64Scalar::new(self))
+            }
+        }
+    };
 }
 
-/// SI base unit constants for kelvin
-pub mod kelvin {
-    /// One kelvin (SI base unit of thermodynamic temperature)
-    pub const KELVIN: f64 = 1.0;
+macro_rules! impl_units {
+    {$($name:ident ($symbol:ident): $dimension:expr),* $(,)?} => {
+        $(
+            paste! {
+                impl_unit!([<Quetta $name>], $name, $dimension, prefixes::QUETTA);
+                impl_unit!([<Ronna $name>], $name, $dimension, prefixes::RONNA);
+                impl_unit!([<Yotta $name>], $name, $dimension, prefixes::YOTTA);
+                impl_unit!([<Zetta $name>], $name, $dimension, prefixes::ZETTA);
+                impl_unit!([<Exa $name>], $name, $dimension, prefixes::EXA);
+                impl_unit!([<Peta $name>], $name, $dimension, prefixes::PETA);
+                impl_unit!([<Tera $name>], $name, $dimension, prefixes::TERA);
+                impl_unit!([<Giga $name>], $name, $dimension, prefixes::GIGA);
+                impl_unit!([<Mega $name>], $name, $dimension, prefixes::MEGA);
+                impl_unit!([<Kilo $name>], $name, $dimension, prefixes::KILO);
+                impl_unit!([<Hecto $name>], $name, $dimension, prefixes::HECTO);
+                impl_unit!([<Deca $name>], $name, $dimension, prefixes::DECA);
 
-    /// Celsius to Kelvin offset
-    pub const CELSIUS_OFFSET: f64 = 273.15;
+                impl_unit!($name, $name, $dimension, prefixes::BASE);
+
+                impl_unit!([<Deci $name>], $name, $dimension, prefixes::DECI);
+                impl_unit!([<Centi $name>], $name, $dimension, prefixes::CENTI);
+                impl_unit!([<Milli $name>], $name, $dimension, prefixes::MILLI);
+                impl_unit!([<Micro $name>], $name, $dimension, prefixes::MICRO);
+                impl_unit!([<Nano $name>], $name, $dimension, prefixes::NANO);
+                impl_unit!([<Pico $name>], $name, $dimension, prefixes::PICO);
+                impl_unit!([<Femto $name>], $name, $dimension, prefixes::FEMTO);
+                impl_unit!([<Atto $name>], $name, $dimension, prefixes::ATTO);
+                impl_unit!([<Zepto $name>], $name, $dimension, prefixes::ZEPTO);
+                impl_unit!([<Yocto $name>], $name, $dimension, prefixes::YOCTO);
+                impl_unit!([<Ronto $name>], $name, $dimension, prefixes::RONTO);
+                impl_unit!([<Quecto $name>], $name, $dimension, prefixes::QUECTO);
+
+                impl SameDimension<[<Quetta $name>], $name> for DimensionEq<[<Quetta $name>], $name> {}
+                impl SameDimension<$name, [<Quetta $name>]> for DimensionEq<$name, [<Quetta $name>]> {}
+                impl SameDimension<[<Ronna $name>], $name> for DimensionEq<[<Ronna $name>], $name> {}
+                impl SameDimension<$name, [<Ronna $name>]> for DimensionEq<$name, [<Ronna $name>]> {}
+                impl SameDimension<[<Yotta $name>], $name> for DimensionEq<[<Yotta $name>], $name> {}
+                impl SameDimension<$name, [<Yotta $name>]> for DimensionEq<$name, [<Yotta $name>]> {}
+                impl SameDimension<[<Zetta $name>], $name> for DimensionEq<[<Zetta $name>], $name> {}
+                impl SameDimension<$name, [<Zetta $name>]> for DimensionEq<$name, [<Zetta $name>]> {}
+                impl SameDimension<[<Exa $name>], $name> for DimensionEq<[<Exa $name>], $name> {}
+                impl SameDimension<$name, [<Exa $name>]> for DimensionEq<$name, [<Exa $name>]> {}
+                impl SameDimension<[<Peta $name>], $name> for DimensionEq<[<Peta $name>], $name> {}
+                impl SameDimension<$name, [<Peta $name>]> for DimensionEq<$name, [<Peta $name>]> {}
+                impl SameDimension<[<Tera $name>], $name> for DimensionEq<[<Tera $name>], $name> {}
+                impl SameDimension<$name, [<Tera $name>]> for DimensionEq<$name, [<Tera $name>]> {}
+                impl SameDimension<[<Giga $name>], $name> for DimensionEq<[<Giga $name>], $name> {}
+                impl SameDimension<$name, [<Giga $name>]> for DimensionEq<$name, [<Giga $name>]> {}
+                impl SameDimension<[<Mega $name>], $name> for DimensionEq<[<Mega $name>], $name> {}
+                impl SameDimension<$name, [<Mega $name>]> for DimensionEq<$name, [<Mega $name>]> {}
+                impl SameDimension<[<Kilo $name>], $name> for DimensionEq<[<Kilo $name>], $name> {}
+                impl SameDimension<$name, [<Kilo $name>]> for DimensionEq<$name, [<Kilo $name>]> {}
+                impl SameDimension<[<Hecto $name>], $name> for DimensionEq<[<Hecto $name>], $name> {}
+                impl SameDimension<$name, [<Hecto $name>]> for DimensionEq<$name, [<Hecto $name>]> {}
+                impl SameDimension<[<Deca $name>], $name> for DimensionEq<[<Deca $name>], $name> {}
+                impl SameDimension<$name, [<Deca $name>]> for DimensionEq<$name, [<Deca $name>]> {}
+
+                impl SameDimension<[<Deci $name>], $name> for DimensionEq<[<Deci $name>], $name> {}
+                impl SameDimension<$name, [<Deci $name>]> for DimensionEq<$name, [<Deci $name>]> {}
+                impl SameDimension<[<Centi $name>], $name> for DimensionEq<[<Centi $name>], $name> {}
+                impl SameDimension<$name, [<Centi $name>]> for DimensionEq<$name, [<Centi $name>]> {}
+                impl SameDimension<[<Milli $name>], $name> for DimensionEq<[<Milli $name>], $name> {}
+                impl SameDimension<$name, [<Milli $name>]> for DimensionEq<$name, [<Milli $name>]> {}
+                impl SameDimension<[<Micro $name>], $name> for DimensionEq<[<Micro $name>], $name> {}
+                impl SameDimension<$name, [<Micro $name>]> for DimensionEq<$name, [<Micro $name>]> {}
+                impl SameDimension<[<Nano $name>], $name> for DimensionEq<[<Nano $name>], $name> {}
+                impl SameDimension<$name, [<Nano $name>]> for DimensionEq<$name, [<Nano $name>]> {}
+                impl SameDimension<[<Pico $name>], $name> for DimensionEq<[<Pico $name>], $name> {}
+                impl SameDimension<$name, [<Pico $name>]> for DimensionEq<$name, [<Pico $name>]> {}
+                impl SameDimension<[<Femto $name>], $name> for DimensionEq<[<Femto $name>], $name> {}
+                impl SameDimension<$name, [<Femto $name>]> for DimensionEq<$name, [<Femto $name>]> {}
+                impl SameDimension<[<Atto $name>], $name> for DimensionEq<[<Atto $name>], $name> {}
+                impl SameDimension<$name, [<Atto $name>]> for DimensionEq<$name, [<Atto $name>]> {}
+                impl SameDimension<[<Zepto $name>], $name> for DimensionEq<[<Zepto $name>], $name> {}
+                impl SameDimension<$name, [<Zepto $name>]> for DimensionEq<$name, [<Zepto $name>]> {}
+                impl SameDimension<[<Yocto $name>], $name> for DimensionEq<[<Yocto $name>], $name> {}
+                impl SameDimension<$name, [<Yocto $name>]> for DimensionEq<$name, [<Yocto $name>]> {}
+                impl SameDimension<[<Ronto $name>], $name> for DimensionEq<[<Ronto $name>], $name> {}
+                impl SameDimension<$name, [<Ronto $name>]> for DimensionEq<$name, [<Ronto $name>]> {}
+                impl SameDimension<[<Quecto $name>], $name> for DimensionEq<[<Quecto $name>], $name> {}
+                impl SameDimension<$name, [<Quecto $name>]> for DimensionEq<$name, [<Quecto $name>]> {}
+            }
+        )*
+
+        pub mod constants {
+            #![allow(non_upper_case_globals)]
+
+            use super::*;
+
+            $(
+                paste! {
+                    impl_units!(@constants $name, $symbol);
+                }
+            )*
+        }
+
+        pub mod types {
+            use super::*;
+
+            $(
+                paste! {
+                    impl_units!(@types $name);
+                }
+            )*
+        }
+    };
+
+    (@constants $name:ident, $symbol:ident) => {
+        paste! {
+            pub const [<Q $symbol>]: [<Quetta $name>] = [<Quetta $name>];
+            pub const [<R $symbol>]: [<Ronna $name>] = [<Ronna $name>];
+            pub const [<Y $symbol>]: [<Yotta $name>] = [<Yotta $name>];
+            pub const [<Z $symbol>]: [<Zetta $name>] = [<Zetta $name>];
+            pub const [<E $symbol>]: [<Exa $name>] = [<Exa $name>];
+            pub const [<P $symbol>]: [<Peta $name>] = [<Peta $name>];
+            pub const [<T $symbol>]: [<Tera $name>] = [<Tera $name>];
+            pub const [<G $symbol>]: [<Giga $name>] = [<Giga $name>];
+            pub const [<M $symbol>]: [<Mega $name>] = [<Mega $name>];
+            pub const [<k $symbol>]: [<Kilo $name>] = [<Kilo $name>];
+            pub const [<h $symbol>]: [<Hecto $name>] = [<Hecto $name>];
+            pub const [<da $symbol>]: [<Deca $name>] = [<Deca $name>];
+
+            pub const $symbol: $name = $name;
+
+            pub const [<d $symbol>]: [<Deci $name>] = [<Deci $name>];
+            pub const [<c $symbol>]: [<Centi $name>] = [<Centi $name>];
+            pub const [<m $symbol>]: [<Milli $name>] = [<Milli $name>];
+            pub const [<u $symbol>]: [<Micro $name>] = [<Micro $name>];
+            pub const [<n $symbol>]: [<Nano $name>] = [<Nano $name>];
+            pub const [<p $symbol>]: [<Pico $name>] = [<Pico $name>];
+            pub const [<f $symbol>]: [<Femto $name>] = [<Femto $name>];
+            pub const [<a $symbol>]: [<Atto $name>] = [<Atto $name>];
+            pub const [<z $symbol>]: [<Zepto $name>] = [<Zepto $name>];
+            pub const [<y $symbol>]: [<Yocto $name>] = [<Yocto $name>];
+            pub const [<r $symbol>]: [<Ronto $name>] = [<Ronto $name>];
+            pub const [<q $symbol>]: [<Quecto $name>] = [<Quecto $name>];
+        }
+    };
+
+    (@types $name:ident) => {
+        paste! {
+            // F64
+            pub type [<F64Giga $name>] = Quantity<F64Scalar, super::[<Giga $name>]>;
+            pub type [<F64Mega $name>] = Quantity<F64Scalar, super::[<Mega $name>]>;
+            pub type [<F64Kilo $name>] = Quantity<F64Scalar, super::[<Kilo $name>]>;
+            pub type [<F64 $name>] = Quantity<F64Scalar, super::$name>;
+            pub type [<F64Milli $name>] = Quantity<F64Scalar, super::[<Milli $name>]>;
+            pub type [<F64Micro $name>] = Quantity<F64Scalar, super::[<Micro $name>]>;
+            pub type [<F64Nano $name>] = Quantity<F64Scalar, super::[<Nano $name>]>;
+
+            // F32
+            pub type [<F32Giga $name>] = Quantity<F32Scalar, super::[<Giga $name>]>;
+            pub type [<F32Mega $name>] = Quantity<F32Scalar, super::[<Mega $name>]>;
+            pub type [<F32Kilo $name>] = Quantity<F32Scalar, super::[<Kilo $name>]>;
+            pub type [<F32 $name>] = Quantity<F32Scalar, super::$name>;
+            pub type [<F32Milli $name>] = Quantity<F32Scalar, super::[<Milli $name>]>;
+            pub type [<F32Micro $name>] = Quantity<F32Scalar, super::[<Micro $name>]>;
+            pub type [<F32Nano $name>] = Quantity<F32Scalar, super::[<Nano $name>]>;
+        }
+    };
 }
 
-// Helper functions for creating quantities
-impl Length {
-    pub fn meters(value: f64) -> Self {
-        Self::from_f64(value)
-    }
-
-    pub fn kilometers(value: f64) -> Self {
-        Self::from_f64(value * meter::KILOMETER)
-    }
-
-    pub fn centimeters(value: f64) -> Self {
-        Self::from_f64(value * meter::CENTIMETER)
-    }
-
-    pub fn millimeters(value: f64) -> Self {
-        Self::from_f64(value * meter::MILLIMETER)
-    }
-
-    pub fn inches(value: f64) -> Self {
-        Self::from_f64(value * meter::INCH)
-    }
-
-    pub fn feet(value: f64) -> Self {
-        Self::from_f64(value * meter::FOOT)
-    }
-
-    pub fn miles(value: f64) -> Self {
-        Self::from_f64(value * meter::MILE)
-    }
+macro_rules! impl_multiply {
+    ($($result:ty = $u1:ident * $u2:ident,)* $(;)?) => {
+        $(
+            impl Multiply<$u2> for $u1 { type Output = $result; }
+            // commutative
+            impl Multiply<$u1> for $u2 { type Output = $result; }
+        )*
+    };
 }
 
-impl Mass {
-    pub fn kilograms(value: f64) -> Self {
-        Self::from_f64(value)
-    }
-
-    pub fn grams(value: f64) -> Self {
-        Self::from_f64(value * kilogram::GRAM)
-    }
-
-    pub fn milligrams(value: f64) -> Self {
-        Self::from_f64(value * kilogram::MILLIGRAM)
-    }
-
-    pub fn pounds(value: f64) -> Self {
-        Self::from_f64(value * kilogram::POUND)
-    }
+macro_rules! impl_divide {
+    ($($result:ty = $u1:ident / $u2:ident,)* $(;)?) => {
+        $(
+            impl Divide<$u2> for $u1 { type Output = $result; }
+        )*
+    };
 }
 
-impl Time {
-    pub fn seconds(value: f64) -> Self {
-        Self::from_f64(value)
-    }
-
-    pub fn milliseconds(value: f64) -> Self {
-        Self::from_f64(value * second::MILLISECOND)
-    }
-
-    pub fn microseconds(value: f64) -> Self {
-        Self::from_f64(value * second::MICROSECOND)
-    }
-
-    pub fn minutes(value: f64) -> Self {
-        Self::from_f64(value * second::MINUTE)
-    }
-
-    pub fn hours(value: f64) -> Self {
-        Self::from_f64(value * second::HOUR)
-    }
+impl_units! {
+    Ampere (A): dimension::ELECTRIC_CURRENT,
+    Volt (V): dimension::VOLTAGE,
+    Ohms (Ohm): dimension::RESISTANCE,
 }
 
-impl ElectricCurrent {
-    pub fn amperes(value: f64) -> Self {
-        Self::from_f64(value)
-    }
-
-    pub fn milliamperes(value: f64) -> Self {
-        Self::from_f64(value * ampere::MILLIAMPERE)
-    }
-
-    pub fn microamperes(value: f64) -> Self {
-        Self::from_f64(value * ampere::MICROAMPERE)
-    }
+impl_multiply! {
+    Volt = Ampere * Ohms,
 }
 
-impl Voltage {
-    pub fn volts(value: f64) -> Self {
-        Self::from_f64(value)
-    }
-
-    pub fn millivolts(value: f64) -> Self {
-        Self::from_f64(value * 0.001)
-    }
-
-    pub fn kilovolts(value: f64) -> Self {
-        Self::from_f64(value * 1000.0)
-    }
-}
-
-impl Resistance {
-    pub fn ohms(value: f64) -> Self {
-        Self::from_f64(value)
-    }
-
-    pub fn kilohms(value: f64) -> Self {
-        Self::from_f64(value * 1000.0)
-    }
-
-    pub fn megohms(value: f64) -> Self {
-        Self::from_f64(value * 1e6)
-    }
-}
-
-impl Velocity {
-    pub fn meters_per_second(value: f64) -> Self {
-        Self::from_f64(value)
-    }
-
-    pub fn kilometers_per_hour(value: f64) -> Self {
-        Self::from_f64(value * meter::KILOMETER / second::HOUR)
-    }
-
-    pub fn miles_per_hour(value: f64) -> Self {
-        Self::from_f64(value * meter::MILE / second::HOUR)
-    }
-}
-
-impl Force {
-    pub fn newtons(value: f64) -> Self {
-        Self::from_f64(value)
-    }
-
-    pub fn kilonewtons(value: f64) -> Self {
-        Self::from_f64(value * 1000.0)
-    }
-}
-
-impl Energy {
-    pub fn joules(value: f64) -> Self {
-        Self::from_f64(value)
-    }
-
-    pub fn kilojoules(value: f64) -> Self {
-        Self::from_f64(value * 1000.0)
-    }
-
-    pub fn megajoules(value: f64) -> Self {
-        Self::from_f64(value * 1e6)
-    }
-
-    pub fn kilowatt_hours(value: f64) -> Self {
-        Self::from_f64(value * 3.6e6)
-    }
-
-    pub fn calories(value: f64) -> Self {
-        Self::from_f64(value * 4.184)
-    }
-
-    pub fn kilocalories(value: f64) -> Self {
-        Self::from_f64(value * 4184.0)
-    }
-}
-
-impl Power {
-    pub fn watts(value: f64) -> Self {
-        Self::from_f64(value)
-    }
-
-    pub fn milliwatts(value: f64) -> Self {
-        Self::from_f64(value * 0.001)
-    }
-
-    pub fn kilowatts(value: f64) -> Self {
-        Self::from_f64(value * 1000.0)
-    }
-
-    pub fn megawatts(value: f64) -> Self {
-        Self::from_f64(value * 1e6)
-    }
-
-    pub fn horsepower(value: f64) -> Self {
-        Self::from_f64(value * 745.7)
-    }
-}
-
-impl Acceleration {
-    pub fn meters_per_second_squared(value: f64) -> Self {
-        Self::from_f64(value)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn length_constructors_work() {
-        let m = Length::meters(1.0);
-        let km = Length::kilometers(1.0);
-        let cm = Length::centimeters(100.0);
-
-        // 1 km = 1000 m
-        assert!((km.value() - 1000.0).abs() < 1e-10);
-        // 100 cm = 1 m
-        assert!((cm.value() - 1.0).abs() < 1e-10);
-        // 1 m = 1 m
-        assert!((m.value() - 1.0).abs() < 1e-10);
-    }
-
-    #[test]
-    fn unit_addition_works() {
-        let a = Length::meters(3.0);
-        let b = Length::meters(2.0);
-        let sum = a + b;
-        assert_eq!(sum.value(), 5.0);
-    }
-
-    #[test]
-    fn unit_conversion_in_operations() {
-        let km = Length::kilometers(1.0);
-        let m = Length::meters(500.0);
-        let total = km + m;
-
-        // 1 km + 500 m = 1500 m
-        assert!((total.value() - 1500.0).abs() < 1e-10);
-    }
-
-    #[test]
-    fn dimension_arithmetic_works() {
-        // Test velocity calculation
-        let distance = Length::meters(100.0);
-        let time = Time::seconds(10.0);
-        let velocity = distance / time;
-        assert_eq!(velocity.value(), 10.0);
-
-        // Test force calculation
-        let mass = Mass::kilograms(10.0);
-        let accel = Acceleration::meters_per_second_squared(9.8);
-        let force = mass * accel;
-        assert_eq!(force.value(), 98.0);
-    }
+impl_divide! {
+    Ampere = Volt / Ohms,
+    Ohms = Volt / Ampere,
 }
