@@ -20,6 +20,36 @@ pub mod indices {
     pub const LUMINOUS_INTENSITY: usize = 6;
 }
 
+pub type PackedDimension = u128;
+
+pub const fn pack(d: DimensionArray) -> PackedDimension {
+    use indices::*;
+
+    (d[TIME] as u8 as u128)
+        | ((d[LENGTH] as u8 as u128) << 8)
+        | ((d[MASS] as u8 as u128) << 16)
+        | ((d[ELECTRIC_CURRENT] as u8 as u128) << 24)
+        | ((d[THERMODYNAMIC_TEMPERATURE] as u8 as u128) << 32)
+        | ((d[AMOUNT_OF_SUBSTANCE] as u8 as u128) << 40)
+        | ((d[LUMINOUS_INTENSITY] as u8 as u128) << 48)
+}
+
+pub const fn unpack(p: PackedDimension) -> DimensionArray {
+    use indices::*;
+
+    let mut d = [0i8; 7];
+
+    d[TIME] = p as u8 as i8;
+    d[LENGTH] = (p >> 8) as u8 as i8;
+    d[MASS] = (p >> 16) as u8 as i8;
+    d[ELECTRIC_CURRENT] = (p >> 24) as u8 as i8;
+    d[THERMODYNAMIC_TEMPERATURE] = (p >> 32) as u8 as i8;
+    d[AMOUNT_OF_SUBSTANCE] = (p >> 40) as u8 as i8;
+    d[LUMINOUS_INTENSITY] = (p >> 48) as u8 as i8;
+
+    d
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct Dimension(pub DimensionArray);
 
@@ -50,6 +80,10 @@ impl Dimension {
 
     pub const fn dimensionless() -> Self {
         Self([0; 7])
+    }
+
+    pub const fn pack(self) -> PackedDimension {
+        pack(self.0)
     }
 
     pub const fn add(self, other: Self) -> Self {
@@ -183,6 +217,34 @@ pub mod array_ops {
     }
 
     pub const fn recip(d: DimensionArray) -> DimensionArray {
+        pow(d, -1)
+    }
+}
+
+pub mod packed_ops {
+    use super::{PackedDimension, array_ops, pack, unpack};
+
+    pub const fn add(a: PackedDimension, b: PackedDimension) -> PackedDimension {
+        pack(array_ops::add(unpack(a), unpack(b)))
+    }
+
+    pub const fn sub(a: PackedDimension, b: PackedDimension) -> PackedDimension {
+        pack(array_ops::sub(unpack(a), unpack(b)))
+    }
+
+    pub const fn pow(d: PackedDimension, n: i8) -> PackedDimension {
+        pack(array_ops::pow(unpack(d), n))
+    }
+
+    pub const fn mul(a: PackedDimension, b: PackedDimension) -> PackedDimension {
+        add(a, b)
+    }
+
+    pub const fn div(a: PackedDimension, b: PackedDimension) -> PackedDimension {
+        sub(a, b)
+    }
+
+    pub const fn recip(d: PackedDimension) -> PackedDimension {
         pow(d, -1)
     }
 }
