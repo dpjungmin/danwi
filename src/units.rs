@@ -1,6 +1,7 @@
 use crate::{
     Sealed,
     dimension::{self, Dimension},
+    prefixes,
     quantity::Quantity,
     scalar::{F32Scalar, F64Scalar},
 };
@@ -13,11 +14,8 @@ pub trait Unit: 'static + Copy {
 }
 
 pub trait SameDimension<U1: Unit, U2: Unit> {}
-
 pub struct DimensionEq<U1: Unit, U2: Unit>(PhantomData<(U1, U2)>);
-
 impl<U: Unit> SameDimension<U, U> for DimensionEq<U, U> {}
-
 impl<U1: Unit, U2: Unit> Sealed for DimensionEq<U1, U2> {}
 
 pub trait BaseUnit: Unit {
@@ -30,34 +28,6 @@ pub trait Multiply<Rhs: Unit>: Unit {
 
 pub trait Divide<Rhs: Unit>: Unit {
     type Output: Unit;
-}
-
-mod prefixes {
-    pub(crate) const QUETTA: i8 = 30;
-    pub(crate) const RONNA: i8 = 27;
-    pub(crate) const YOTTA: i8 = 24;
-    pub(crate) const ZETTA: i8 = 21;
-    pub(crate) const EXA: i8 = 18;
-    pub(crate) const PETA: i8 = 15;
-    pub(crate) const TERA: i8 = 12;
-    pub(crate) const GIGA: i8 = 9;
-    pub(crate) const MEGA: i8 = 6;
-    pub(crate) const KILO: i8 = 3;
-    pub(crate) const HECTO: i8 = 2;
-    pub(crate) const DECA: i8 = 1;
-    pub(crate) const BASE: i8 = 0;
-    pub(crate) const DECI: i8 = -1;
-    pub(crate) const CENTI: i8 = -2;
-    pub(crate) const MILLI: i8 = -3;
-    pub(crate) const MICRO: i8 = -6;
-    pub(crate) const NANO: i8 = -9;
-    pub(crate) const PICO: i8 = -12;
-    pub(crate) const FEMTO: i8 = -15;
-    pub(crate) const ATTO: i8 = -18;
-    pub(crate) const ZEPTO: i8 = -21;
-    pub(crate) const YOCTO: i8 = -24;
-    pub(crate) const RONTO: i8 = -27;
-    pub(crate) const QUECTO: i8 = -30;
 }
 
 macro_rules! impl_unit {
@@ -175,6 +145,240 @@ macro_rules! impl_units {
                 impl SameDimension<$name, [<Quecto $name>]> for DimensionEq<$name, [<Quecto $name>]> {}
             }
         )*
+
+        pub mod ext {
+            #![allow(non_snake_case)]
+
+            use super::*;
+
+            paste! {
+                pub trait F32QuantityExt {
+                    $(
+                        fn [<Q $symbol>](self) -> Quantity<F32Scalar, [<Quetta $name>]>;
+                        fn [<R $symbol>](self) -> Quantity<F32Scalar, [<Ronna $name>]>;
+                        fn [<Y $symbol>](self) -> Quantity<F32Scalar, [<Yotta $name>]>;
+                        fn [<Z $symbol>](self) -> Quantity<F32Scalar, [<Zetta $name>]>;
+                        fn [<E $symbol>](self) -> Quantity<F32Scalar, [<Exa $name>]>;
+                        fn [<P $symbol>](self) -> Quantity<F32Scalar, [<Peta $name>]>;
+                        fn [<T $symbol>](self) -> Quantity<F32Scalar, [<Tera $name>]>;
+                        fn [<G $symbol>](self) -> Quantity<F32Scalar, [<Giga $name>]>;
+                        fn [<M $symbol>](self) -> Quantity<F32Scalar, [<Mega $name>]>;
+                        fn [<k $symbol>](self) -> Quantity<F32Scalar, [<Kilo $name>]>;
+                        fn [<h $symbol>](self) -> Quantity<F32Scalar, [<Hecto $name>]>;
+                        fn [<da $symbol>](self) -> Quantity<F32Scalar, [<Deca $name>]>;
+                        fn $symbol(self) -> Quantity<F32Scalar, $name>;
+                        fn [<d $symbol>](self) -> Quantity<F32Scalar, [<Deci $name>]>;
+                        fn [<c $symbol>](self) -> Quantity<F32Scalar, [<Centi $name>]>;
+                        fn [<m $symbol>](self) -> Quantity<F32Scalar, [<Milli $name>]>;
+                        fn [<u $symbol>](self) -> Quantity<F32Scalar, [<Micro $name>]>;
+                        fn [<n $symbol>](self) -> Quantity<F32Scalar, [<Nano $name>]>;
+                        fn [<p $symbol>](self) -> Quantity<F32Scalar, [<Pico $name>]>;
+                        fn [<f $symbol>](self) -> Quantity<F32Scalar, [<Femto $name>]>;
+                        fn [<a $symbol>](self) -> Quantity<F32Scalar, [<Atto $name>]>;
+                        fn [<z $symbol>](self) -> Quantity<F32Scalar, [<Zepto $name>]>;
+                        fn [<y $symbol>](self) -> Quantity<F32Scalar, [<Yocto $name>]>;
+                        fn [<r $symbol>](self) -> Quantity<F32Scalar, [<Ronto $name>]>;
+                        fn [<q $symbol>](self) -> Quantity<F32Scalar, [<Quecto $name>]>;
+                    )*
+                }
+
+                pub trait F64QuantityExt {
+                    $(
+                        fn [<Q $symbol>](self) -> Quantity<F64Scalar, [<Quetta $name>]>;
+                        fn [<R $symbol>](self) -> Quantity<F64Scalar, [<Ronna $name>]>;
+                        fn [<Y $symbol>](self) -> Quantity<F64Scalar, [<Yotta $name>]>;
+                        fn [<Z $symbol>](self) -> Quantity<F64Scalar, [<Zetta $name>]>;
+                        fn [<E $symbol>](self) -> Quantity<F64Scalar, [<Exa $name>]>;
+                        fn [<P $symbol>](self) -> Quantity<F64Scalar, [<Peta $name>]>;
+                        fn [<T $symbol>](self) -> Quantity<F64Scalar, [<Tera $name>]>;
+                        fn [<G $symbol>](self) -> Quantity<F64Scalar, [<Giga $name>]>;
+                        fn [<M $symbol>](self) -> Quantity<F64Scalar, [<Mega $name>]>;
+                        fn [<k $symbol>](self) -> Quantity<F64Scalar, [<Kilo $name>]>;
+                        fn [<h $symbol>](self) -> Quantity<F64Scalar, [<Hecto $name>]>;
+                        fn [<da $symbol>](self) -> Quantity<F64Scalar, [<Deca $name>]>;
+                        fn $symbol(self) -> Quantity<F64Scalar, $name>;
+                        fn [<d $symbol>](self) -> Quantity<F64Scalar, [<Deci $name>]>;
+                        fn [<c $symbol>](self) -> Quantity<F64Scalar, [<Centi $name>]>;
+                        fn [<m $symbol>](self) -> Quantity<F64Scalar, [<Milli $name>]>;
+                        fn [<u $symbol>](self) -> Quantity<F64Scalar, [<Micro $name>]>;
+                        fn [<n $symbol>](self) -> Quantity<F64Scalar, [<Nano $name>]>;
+                        fn [<p $symbol>](self) -> Quantity<F64Scalar, [<Pico $name>]>;
+                        fn [<f $symbol>](self) -> Quantity<F64Scalar, [<Femto $name>]>;
+                        fn [<a $symbol>](self) -> Quantity<F64Scalar, [<Atto $name>]>;
+                        fn [<z $symbol>](self) -> Quantity<F64Scalar, [<Zepto $name>]>;
+                        fn [<y $symbol>](self) -> Quantity<F64Scalar, [<Yocto $name>]>;
+                        fn [<r $symbol>](self) -> Quantity<F64Scalar, [<Ronto $name>]>;
+                        fn [<q $symbol>](self) -> Quantity<F64Scalar, [<Quecto $name>]>;
+                    )*
+                }
+            }
+
+            paste! {
+                impl F32QuantityExt for f32 {
+                    $(
+                        fn [<Q $symbol>](self) -> Quantity<F32Scalar, [<Quetta $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<R $symbol>](self) -> Quantity<F32Scalar, [<Ronna $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<Y $symbol>](self) -> Quantity<F32Scalar, [<Yotta $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<Z $symbol>](self) -> Quantity<F32Scalar, [<Zetta $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<E $symbol>](self) -> Quantity<F32Scalar, [<Exa $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<P $symbol>](self) -> Quantity<F32Scalar, [<Peta $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<T $symbol>](self) -> Quantity<F32Scalar, [<Tera $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<G $symbol>](self) -> Quantity<F32Scalar, [<Giga $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<M $symbol>](self) -> Quantity<F32Scalar, [<Mega $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<k $symbol>](self) -> Quantity<F32Scalar, [<Kilo $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<h $symbol>](self) -> Quantity<F32Scalar, [<Hecto $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<da $symbol>](self) -> Quantity<F32Scalar, [<Deca $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+
+                        fn $symbol(self) -> Quantity<F32Scalar, $name> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+
+                        fn [<d $symbol>](self) -> Quantity<F32Scalar, [<Deci $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<c $symbol>](self) -> Quantity<F32Scalar, [<Centi $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<m $symbol>](self) -> Quantity<F32Scalar, [<Milli $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<u $symbol>](self) -> Quantity<F32Scalar, [<Micro $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<n $symbol>](self) -> Quantity<F32Scalar, [<Nano $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<p $symbol>](self) -> Quantity<F32Scalar, [<Pico $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<f $symbol>](self) -> Quantity<F32Scalar, [<Femto $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<a $symbol>](self) -> Quantity<F32Scalar, [<Atto $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<z $symbol>](self) -> Quantity<F32Scalar, [<Zepto $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<y $symbol>](self) -> Quantity<F32Scalar, [<Yocto $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<r $symbol>](self) -> Quantity<F32Scalar, [<Ronto $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<q $symbol>](self) -> Quantity<F32Scalar, [<Quecto $name>]> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                    )*
+                }
+
+                impl F64QuantityExt for f64 {
+                    $(
+                        fn [<Q $symbol>](self) -> Quantity<F64Scalar, [<Quetta $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<R $symbol>](self) -> Quantity<F64Scalar, [<Ronna $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<Y $symbol>](self) -> Quantity<F64Scalar, [<Yotta $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<Z $symbol>](self) -> Quantity<F64Scalar, [<Zetta $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<E $symbol>](self) -> Quantity<F64Scalar, [<Exa $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<P $symbol>](self) -> Quantity<F64Scalar, [<Peta $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<T $symbol>](self) -> Quantity<F64Scalar, [<Tera $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<G $symbol>](self) -> Quantity<F64Scalar, [<Giga $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<M $symbol>](self) -> Quantity<F64Scalar, [<Mega $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<k $symbol>](self) -> Quantity<F64Scalar, [<Kilo $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<h $symbol>](self) -> Quantity<F64Scalar, [<Hecto $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<da $symbol>](self) -> Quantity<F64Scalar, [<Deca $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+
+                        fn $symbol(self) -> Quantity<F64Scalar, $name> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+
+                        fn [<d $symbol>](self) -> Quantity<F64Scalar, [<Deci $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<c $symbol>](self) -> Quantity<F64Scalar, [<Centi $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<m $symbol>](self) -> Quantity<F64Scalar, [<Milli $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<u $symbol>](self) -> Quantity<F64Scalar, [<Micro $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<n $symbol>](self) -> Quantity<F64Scalar, [<Nano $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<p $symbol>](self) -> Quantity<F64Scalar, [<Pico $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<f $symbol>](self) -> Quantity<F64Scalar, [<Femto $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<a $symbol>](self) -> Quantity<F64Scalar, [<Atto $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<z $symbol>](self) -> Quantity<F64Scalar, [<Zepto $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<y $symbol>](self) -> Quantity<F64Scalar, [<Yocto $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<r $symbol>](self) -> Quantity<F64Scalar, [<Ronto $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<q $symbol>](self) -> Quantity<F64Scalar, [<Quecto $name>]> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                    )*
+                }
+            }
+        }
 
         pub mod constants {
             #![allow(non_upper_case_globals)]
