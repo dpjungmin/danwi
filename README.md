@@ -32,29 +32,10 @@ assert_eq!(i, 5.0 * mA);
 
 ## TODO
 
+- implement automatic type-level unit arithmetic
 - add more SI derived units (i.e., power, energy, force, etc.)
 - implement `Display` trait for pretty-printing quantities with units
 - add common mathematical operations (`abs`, `powi`, `sqrt`)
 - add feature flags for conditional compilation
   - unit categories (electrical, mechanical, etc.)
   - prefix sets (common vs. all)
-
-## Future
-
-Use packed dimensions as generic consts to perform computation with const
-generic parameters (once `generic_const_exprs` feature stabilizes).
-
-```rust,ignore
-// now: manual implementation for every unit combination
-impl Multiply<Ohms> for Ampere {
-    type Output = Volt;
-}
-
-// future: automatic dimension calculation
-impl<const D1: u128, const D2: u128> Mul<Unit<D2>> for Unit<D1> {
-    type Output = Unit<{D1 + D2}>;  // requires generic_const_exprs
-}
-```
-
-- RFC: https://github.com/rust-lang/rfcs/blob/master/text/2000-const-generics.md
-- Tracking issue: https://github.com/rust-lang/rust/issues/76560
