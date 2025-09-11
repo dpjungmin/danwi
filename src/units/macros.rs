@@ -142,7 +142,7 @@ macro_rules! impl_units {
                         fn [<n $symbol>](self) -> Quantity<F32Scalar, [<Nano $name>]>;
                         fn [<p $symbol>](self) -> Quantity<F32Scalar, [<Pico $name>]>;
                         fn [<f $symbol>](self) -> Quantity<F32Scalar, [<Femto $name>]>;
-                        fn [<a $symbol>](self) -> Quantity<F32Scalar, [<Atto $name>]>;
+                        // fn [<a $symbol>](self) -> Quantity<F32Scalar, [<Atto $name>]>;
                         fn [<z $symbol>](self) -> Quantity<F32Scalar, [<Zepto $name>]>;
                         fn [<y $symbol>](self) -> Quantity<F32Scalar, [<Yocto $name>]>;
                         fn [<r $symbol>](self) -> Quantity<F32Scalar, [<Ronto $name>]>;
@@ -172,7 +172,7 @@ macro_rules! impl_units {
                         fn [<n $symbol>](self) -> Quantity<F64Scalar, [<Nano $name>]>;
                         fn [<p $symbol>](self) -> Quantity<F64Scalar, [<Pico $name>]>;
                         fn [<f $symbol>](self) -> Quantity<F64Scalar, [<Femto $name>]>;
-                        fn [<a $symbol>](self) -> Quantity<F64Scalar, [<Atto $name>]>;
+                        // fn [<a $symbol>](self) -> Quantity<F64Scalar, [<Atto $name>]>;
                         fn [<z $symbol>](self) -> Quantity<F64Scalar, [<Zepto $name>]>;
                         fn [<y $symbol>](self) -> Quantity<F64Scalar, [<Yocto $name>]>;
                         fn [<r $symbol>](self) -> Quantity<F64Scalar, [<Ronto $name>]>;
@@ -246,9 +246,9 @@ macro_rules! impl_units {
                         fn [<f $symbol>](self) -> Quantity<F32Scalar, [<Femto $name>]> {
                             Quantity::new(F32Scalar::new(self))
                         }
-                        fn [<a $symbol>](self) -> Quantity<F32Scalar, [<Atto $name>]> {
-                            Quantity::new(F32Scalar::new(self))
-                        }
+                        // fn [<a $symbol>](self) -> Quantity<F32Scalar, [<Atto $name>]> {
+                        //     Quantity::new(F32Scalar::new(self))
+                        // }
                         fn [<z $symbol>](self) -> Quantity<F32Scalar, [<Zepto $name>]> {
                             Quantity::new(F32Scalar::new(self))
                         }
@@ -328,9 +328,9 @@ macro_rules! impl_units {
                         fn [<f $symbol>](self) -> Quantity<F64Scalar, [<Femto $name>]> {
                             Quantity::new(F64Scalar::new(self))
                         }
-                        fn [<a $symbol>](self) -> Quantity<F64Scalar, [<Atto $name>]> {
-                            Quantity::new(F64Scalar::new(self))
-                        }
+                        // fn [<a $symbol>](self) -> Quantity<F64Scalar, [<Atto $name>]> {
+                        //     Quantity::new(F64Scalar::new(self))
+                        // }
                         fn [<z $symbol>](self) -> Quantity<F64Scalar, [<Zepto $name>]> {
                             Quantity::new(F64Scalar::new(self))
                         }
@@ -395,7 +395,7 @@ macro_rules! impl_units {
             pub const [<n $symbol>]: [<Nano $name>] = [<Nano $name>];
             pub const [<p $symbol>]: [<Pico $name>] = [<Pico $name>];
             pub const [<f $symbol>]: [<Femto $name>] = [<Femto $name>];
-            pub const [<a $symbol>]: [<Atto $name>] = [<Atto $name>];
+            // pub const [<a $symbol>]: [<Atto $name>] = [<Atto $name>];
             pub const [<z $symbol>]: [<Zepto $name>] = [<Zepto $name>];
             pub const [<y $symbol>]: [<Yocto $name>] = [<Yocto $name>];
             pub const [<r $symbol>]: [<Ronto $name>] = [<Ronto $name>];

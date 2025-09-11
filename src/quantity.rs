@@ -102,3 +102,132 @@ where
         base_lhs.value == base_rhs.value
     }
 }
+
+// Available when either testing or when the "approx" feature is enabled
+#[cfg(any(test, feature = "approx"))]
+mod approx_impl {
+    use super::*;
+    use approx::{AbsDiffEq, RelativeEq};
+
+    impl<U1, U2> AbsDiffEq<Quantity<F64Scalar, U2>> for Quantity<F64Scalar, U1>
+    where
+        U1: Unit + BaseUnit,
+        U2: Unit + BaseUnit,
+        BaseOf<U1>: Unit,
+        BaseOf<U2>: Unit,
+        DimensionEq<U1, U2>: SameDimension<U1, U2>,
+        DimensionEq<U1, BaseOf<U1>>: SameDimension<U1, BaseOf<U1>>,
+        DimensionEq<U2, BaseOf<U2>>: SameDimension<U2, BaseOf<U2>>,
+        DimensionEq<BaseOf<U1>, BaseOf<U2>>: SameDimension<BaseOf<U1>, BaseOf<U2>>,
+    {
+        type Epsilon = f64;
+
+        fn default_epsilon() -> Self::Epsilon {
+            f64::EPSILON
+        }
+
+        fn abs_diff_eq(&self, other: &Quantity<F64Scalar, U2>, epsilon: Self::Epsilon) -> bool {
+            let self_base = self.to::<BaseOf<U1>>();
+            let other_base = other.to::<BaseOf<U2>>();
+            (self_base.value.get() - other_base.value.get()).abs() <= epsilon
+        }
+    }
+
+    impl<U1, U2> RelativeEq<Quantity<F64Scalar, U2>> for Quantity<F64Scalar, U1>
+    where
+        U1: Unit + BaseUnit,
+        U2: Unit + BaseUnit,
+        BaseOf<U1>: Unit,
+        BaseOf<U2>: Unit,
+        DimensionEq<U1, U2>: SameDimension<U1, U2>,
+        DimensionEq<U1, BaseOf<U1>>: SameDimension<U1, BaseOf<U1>>,
+        DimensionEq<U2, BaseOf<U2>>: SameDimension<U2, BaseOf<U2>>,
+        DimensionEq<BaseOf<U1>, BaseOf<U2>>: SameDimension<BaseOf<U1>, BaseOf<U2>>,
+    {
+        fn default_max_relative() -> Self::Epsilon {
+            f64::EPSILON
+        }
+
+        fn relative_eq(
+            &self,
+            other: &Quantity<F64Scalar, U2>,
+            epsilon: Self::Epsilon,
+            max_relative: Self::Epsilon,
+        ) -> bool {
+            let self_base = self.to::<BaseOf<U1>>();
+            let other_base = other.to::<BaseOf<U2>>();
+
+            let diff = (self_base.value.get() - other_base.value.get()).abs();
+            if diff <= epsilon {
+                return true;
+            }
+
+            let abs_self = self_base.value.get().abs();
+            let abs_other = other_base.value.get().abs();
+            let largest = abs_self.max(abs_other);
+
+            diff <= largest * max_relative
+        }
+    }
+
+    impl<U1, U2> AbsDiffEq<Quantity<F32Scalar, U2>> for Quantity<F32Scalar, U1>
+    where
+        U1: Unit + BaseUnit,
+        U2: Unit + BaseUnit,
+        BaseOf<U1>: Unit,
+        BaseOf<U2>: Unit,
+        DimensionEq<U1, U2>: SameDimension<U1, U2>,
+        DimensionEq<U1, BaseOf<U1>>: SameDimension<U1, BaseOf<U1>>,
+        DimensionEq<U2, BaseOf<U2>>: SameDimension<U2, BaseOf<U2>>,
+        DimensionEq<BaseOf<U1>, BaseOf<U2>>: SameDimension<BaseOf<U1>, BaseOf<U2>>,
+    {
+        type Epsilon = f32;
+
+        fn default_epsilon() -> Self::Epsilon {
+            f32::EPSILON
+        }
+
+        fn abs_diff_eq(&self, other: &Quantity<F32Scalar, U2>, epsilon: Self::Epsilon) -> bool {
+            let self_base = self.to::<BaseOf<U1>>();
+            let other_base = other.to::<BaseOf<U2>>();
+            (self_base.value.get() - other_base.value.get()).abs() <= epsilon
+        }
+    }
+
+    impl<U1, U2> RelativeEq<Quantity<F32Scalar, U2>> for Quantity<F32Scalar, U1>
+    where
+        U1: Unit + BaseUnit,
+        U2: Unit + BaseUnit,
+        BaseOf<U1>: Unit,
+        BaseOf<U2>: Unit,
+        DimensionEq<U1, U2>: SameDimension<U1, U2>,
+        DimensionEq<U1, BaseOf<U1>>: SameDimension<U1, BaseOf<U1>>,
+        DimensionEq<U2, BaseOf<U2>>: SameDimension<U2, BaseOf<U2>>,
+        DimensionEq<BaseOf<U1>, BaseOf<U2>>: SameDimension<BaseOf<U1>, BaseOf<U2>>,
+    {
+        fn default_max_relative() -> Self::Epsilon {
+            f32::EPSILON
+        }
+
+        fn relative_eq(
+            &self,
+            other: &Quantity<F32Scalar, U2>,
+            epsilon: Self::Epsilon,
+            max_relative: Self::Epsilon,
+        ) -> bool {
+            let self_base = self.to::<BaseOf<U1>>();
+            let other_base = other.to::<BaseOf<U2>>();
+
+            let diff = (self_base.value.get() - other_base.value.get()).abs();
+            if diff <= epsilon {
+                return true;
+            }
+
+            let abs_self = self_base.value.get().abs();
+            let abs_other = other_base.value.get().abs();
+            let largest = abs_self.max(abs_other);
+
+            diff <= largest * max_relative
+        }
+    }
+}
