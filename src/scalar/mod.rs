@@ -1,12 +1,11 @@
 mod float;
 
-use crate::sealed::Sealed;
-use core::fmt::Debug;
+use core::fmt::{Debug, Display};
 
 pub use float::{F32Scalar, F64Scalar};
 
-pub trait Scalar: Clone + Debug + PartialEq + Sized + Sealed {
-    type Value: Clone + Debug + PartialEq;
+pub trait Scalar: Clone + Debug + PartialEq + Sized {
+    type Value: Clone + Debug + PartialEq + Display;
 
     fn get(&self) -> Self::Value;
     fn scale_by_power_of_10(&self, exponent: i8) -> Self;

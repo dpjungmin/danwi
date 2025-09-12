@@ -9,33 +9,42 @@ checking, and `no_std` support.
 
 ```rust
 use danwi::prelude::*;
-use danwi::quantity::Quantity;
-use danwi::scalar::F64Scalar;
 
 // create a quantity by multiplying units
 let v = (5.0_f64 * mA) * (2.0 * kOhm);
 assert_eq!(v, 10.0 * V);
-assert_eq!(v, 10.0.V()); // create a quantity using the extension trait
-assert_eq!(v, 5.0.mA() * 2.0.kOhm());
-assert_eq!(v, Quantity::<F64Scalar, Volt>::from(10.0)); // create a quantity directly
+assert_eq!(v.value(), 10.0);
 assert_eq!(v, F64Volt::from(10.0)); // create a quantity using type alias
 
 // convert between prefixes
-let mv = v.to::<MilliVolt>();
+let mv = v.to::<Millivolt>();
+assert_eq!(mv.value(), 10000.0);
 assert_eq!(mv, 10000.0 * mV);
 assert_eq!(mv, 10.0 * V);
 assert_eq!(mv, 0.01 * kV);
 
 let i = v / (2.0 * kOhm);
 assert_eq!(i, 5.0 * mA);
+
+let t = (1.0_f64 * s) + (1e3 * ms) + (1e6 * us) + (1e9 * ns);
+assert_eq!(t, 4.0 * s);
+assert_eq!(t / (2.0 * s), 2.0);
+assert_eq!(t / (2e3 * ms), 2.0);
+
+let period = 1.0 * s;
+let freq = 1.0 / period;
+assert_eq!(freq, 1.0 * Hz);
+
+let a = F64Metre::from(100.0);
+let b = 50.0 * cm;
+let c = 0.001 * km;
+let len = a + b + c;
+println!("Length: {} m", len.value()); // Length: 101.5 m
+println!("Length: {} m", len); // Length: 101.5 m
+println!("Length: {} cm", len.to::<Centimetre>()); // Length: 10150 cm
+println!("Length: {} km", len.to::<Kilometre>()); // Length: 0.1015 m
 ```
 
 ## TODO
 
-- implement automatic type-level unit arithmetic
-- add more SI derived units (i.e., power, energy, force, etc.)
-- implement `Display` trait for pretty-printing quantities with units
-- add common mathematical operations (`abs`, `powi`, `sqrt`)
-- add feature flags for conditional compilation
-  - unit categories (electrical, mechanical, etc.)
-  - prefix sets (common vs. all)
+- [TODO.md](./TODO.md)
