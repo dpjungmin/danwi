@@ -3,7 +3,7 @@ use crate::{
     dimension::{CanDivideBy, CanMultiplyWith, CanReciprocate, Dimensions},
     scalar::{F32Scalar, F64Scalar, Scalar},
 };
-use core::ops::{Add, Div, Mul, Sub};
+use core::ops::{Add, Div, Mul, Neg, Sub};
 
 // Quantity + Quantity
 impl<S, D> Add<Quantity<S, D>> for Quantity<S, D>
@@ -152,5 +152,31 @@ where
     fn div(self, rhs: Quantity<F64Scalar, D>) -> Self::Output {
         let rhs_base = rhs.value.scale_by_power_of_10(rhs.unit.prefix);
         Quantity::new(F64Scalar::new(self).div(&rhs_base))
+    }
+}
+
+/// Negation of a quantity.
+///
+/// # Examples
+///
+/// ```
+/// # use danwi::prelude::*;
+///
+/// let force = 10.0_f64 * N;
+/// assert_eq!(force, 10.0.N());
+/// assert_eq!(-force, -10.0.N());
+///
+/// let mass = 42.0_f64 * kg;
+/// assert_eq!(-(-mass), 42.0.kg());
+/// ```
+impl<S, D> Neg for Quantity<S, D>
+where
+    S: Scalar,
+    D: Dimensions,
+{
+    type Output = Quantity<S, D>;
+
+    fn neg(self) -> Self::Output {
+        Self::with_unit(self.value.neg(), self.unit)
     }
 }
