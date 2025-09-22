@@ -1,50 +1,9 @@
+use super::Quantity;
 use crate::{
-    dimension::{CanDivideBy, CanMultiplyWith, CanReciprocate, Dimensionless, Dimensions},
+    dimension::{CanDivideBy, CanMultiplyWith, CanReciprocate, Dimensions},
     scalar::{F32Scalar, F64Scalar, Scalar},
-    unit::Unit,
 };
-use core::{
-    fmt,
-    ops::{Add, Div, Mul, Sub},
-};
-
-#[derive(Debug, Clone, Copy)]
-pub struct Quantity<S, D>
-where
-    S: Scalar,
-    D: Dimensions,
-{
-    pub(crate) value: S,
-    pub(crate) unit: Unit<D>,
-}
-
-impl<S, D> Quantity<S, D>
-where
-    S: Scalar,
-    D: Dimensions,
-{
-    #[inline]
-    pub(crate) fn with_unit(value: S, unit: Unit<D>) -> Self {
-        Self { value, unit }
-    }
-
-    #[inline]
-    pub fn new(value: S) -> Self {
-        Self::with_unit(value, Unit::base())
-    }
-
-    #[inline]
-    pub fn value(&self) -> S::Value {
-        self.value.get()
-    }
-
-    #[inline]
-    pub fn to(&self, target_unit: Unit<D>) -> Self {
-        let prefix_diff = self.unit.prefix - target_unit.prefix;
-        let scaled_value = self.value.scale_by_power_of_10(prefix_diff);
-        Self::with_unit(scaled_value, target_unit)
-    }
-}
+use core::ops::{Add, Div, Mul, Sub};
 
 // Quantity + Quantity
 impl<S, D> Add<Quantity<S, D>> for Quantity<S, D>
@@ -193,61 +152,5 @@ where
     fn div(self, rhs: Quantity<F64Scalar, D>) -> Self::Output {
         let rhs_base = rhs.value.scale_by_power_of_10(rhs.unit.prefix);
         Quantity::new(F64Scalar::new(self).div(&rhs_base))
-    }
-}
-
-// Quantity from Scalar
-impl<S: Scalar, D: Dimensions> From<S> for Quantity<S, D> {
-    fn from(value: S) -> Self {
-        Self::new(value)
-    }
-}
-
-// Quantity from f32
-impl<D: Dimensions> From<f32> for Quantity<F32Scalar, D> {
-    fn from(value: f32) -> Self {
-        Self::new(F32Scalar::new(value))
-    }
-}
-
-// Quantity from f64
-impl<D: Dimensions> From<f64> for Quantity<F64Scalar, D> {
-    fn from(value: f64) -> Self {
-        Self::new(F64Scalar::new(value))
-    }
-}
-
-impl<S, D> PartialEq for Quantity<S, D>
-where
-    S: Scalar + PartialEq,
-    D: Dimensions,
-{
-    fn eq(&self, other: &Self) -> bool {
-        let lhs_base = self.value.scale_by_power_of_10(self.unit.prefix);
-        let rhs_base = other.value.scale_by_power_of_10(other.unit.prefix);
-        lhs_base == rhs_base
-    }
-}
-
-impl PartialEq<f32> for Quantity<F32Scalar, Dimensionless> {
-    fn eq(&self, other: &f32) -> bool {
-        self.value.get() == *other
-    }
-}
-
-impl PartialEq<f64> for Quantity<F64Scalar, Dimensionless> {
-    fn eq(&self, other: &f64) -> bool {
-        self.value.get() == *other
-    }
-}
-
-impl<S, D> fmt::Display for Quantity<S, D>
-where
-    S: Scalar,
-    S::Value: fmt::Display,
-    D: Dimensions,
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.value())
     }
 }
