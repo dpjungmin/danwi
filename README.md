@@ -11,6 +11,7 @@ use danwi::prelude::*;
 // create a quantity by multiplying units
 let v = (5.0_f64 * mA) * (2.0_f64 * kOhm);
 assert_eq!(v, 10.0 * V);
+assert_eq!(v, 10.0.V()); // create a quantity using the extension trait
 assert_eq!(v.value(), 10.0);
 assert_eq!(v, F64Volt::from(10.0)); // create a quantity using type alias
 
@@ -29,9 +30,9 @@ assert_eq!(t, 4.0 * s);
 assert_eq!(t / (2.0 * s), 2.0);
 assert_eq!(t / (2e3 * ms), 2.0);
 
-let period = 1.0 * s;
+let period = 1.0.s();
 let freq = 1.0 / period;
-assert_eq!(freq, 1.0 * Hz);
+assert_eq!(freq, 1.0.Hz());
 
 let a = F64Metre::from(100.0);
 let b = 50.0 * cm;

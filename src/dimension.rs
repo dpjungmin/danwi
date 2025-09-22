@@ -1,7 +1,7 @@
 //! Type-level dimensions with compile-time arithmetics.
 
 use core::ops::{Add, Neg, Sub};
-use typenum::{Diff, Integer, Negate, P1, P2, Prod, Sum, Z0};
+use typenum::{Diff, Integer, Negate, P1, Prod, Sum, Z0};
 
 /// Type-level dimension representation.
 ///
@@ -178,117 +178,76 @@ pub type Dimensionless = Dimension<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
 pub mod base {
     use super::*;
 
-    /// Time (second, s)
-    ///
-    /// T
+    /// Time (second, s) = T
     pub type Time = Dimension<P1, Z0, Z0, Z0, Z0, Z0, Z0>;
 
-    /// Length (metre, m)
-    ///
-    /// L
+    /// Length (metre, m) = L
     pub type Length = Dimension<Z0, P1, Z0, Z0, Z0, Z0, Z0>;
 
-    /// Mass (kilogram, kg)
-    ///
-    /// M
+    /// Mass (kilogram, kg) = M
     pub type Mass = Dimension<Z0, Z0, P1, Z0, Z0, Z0, Z0>;
 
-    /// Electric current (ampere, A)
-    ///
-    /// A
+    /// Electric current (ampere, A) = A
     pub type ElectricCurrent = Dimension<Z0, Z0, Z0, P1, Z0, Z0, Z0>;
 
-    /// Thermodynamic temperature (kelvin, K)
-    ///
-    /// K
+    /// Thermodynamic temperature (kelvin, K) = K
     pub type ThermodynamicTemperature = Dimension<Z0, Z0, Z0, Z0, P1, Z0, Z0>;
 
-    /// Amount of substance (mole, mol)
-    ///
-    /// mol
+    /// Amount of substance (mole, mol) = mol
     pub type AmountOfSubstance = Dimension<Z0, Z0, Z0, Z0, Z0, P1, Z0>;
 
-    /// Luminous intensity (candela, cd)
-    ///
-    /// cd
+    /// Luminous intensity (candela, cd) = cd
     pub type LuminousIntensity = Dimension<Z0, Z0, Z0, Z0, Z0, Z0, P1>;
 }
 
 pub mod derived {
-    use super::{base::*, *};
+    use super::*;
+    use typenum::{N1, N2, N3, P1, P2, P3, P4, Z0};
 
-    /// Frequency (hertz, Hz)
-    ///
-    /// T⁻¹
-    pub type Frequency = DimensionRecip<Time>;
+    /// Frequency (hertz, Hz) = T⁻¹
+    pub type Frequency = Dimension<N1, Z0, Z0, Z0, Z0, Z0, Z0>;
 
-    /// Velocity (metre per second, m/s)
-    ///
-    /// L·T⁻¹
-    pub type Velocity = DimensionDiv<Length, Time>;
+    /// Velocity (metre per second, m/s) = L·T⁻¹
+    pub type Velocity = Dimension<N1, P1, Z0, Z0, Z0, Z0, Z0>;
 
-    /// Acceleration (metre per second squared, m/s²)
-    ///
-    /// L·T⁻²
-    pub type Acceleration = DimensionDiv<Velocity, Time>;
+    /// Acceleration (metre per second squared, m/s²) = L·T⁻²
+    pub type Acceleration = Dimension<N2, P1, Z0, Z0, Z0, Z0, Z0>;
 
-    /// Force (newton, N)
-    ///
-    /// M·L·T⁻²
-    pub type Force = DimensionMul<Mass, Acceleration>;
+    /// Force (newton, N) = M·L·T⁻² = kg·m/s²
+    pub type Force = Dimension<N2, P1, P1, Z0, Z0, Z0, Z0>;
 
-    /// Energy, work, heat (joule, J)
-    ///
-    /// M·L²·T⁻²
-    pub type Energy = DimensionMul<Force, Length>;
+    /// Energy, work, heat (joule, J) = M·L²·T⁻² = kg·m²/s²
+    pub type Energy = Dimension<N2, P2, P1, Z0, Z0, Z0, Z0>;
 
-    /// Power (watt, W)
-    ///
-    /// M·L²·T⁻³
-    pub type Power = DimensionDiv<Energy, Time>;
+    /// Power (watt, W) = M·L²·T⁻³ = kg·m²/s³
+    pub type Power = Dimension<N3, P2, P1, Z0, Z0, Z0, Z0>;
 
-    /// Electric potential, voltage (volt, V)
-    ///
-    /// M·L²·T⁻³·A⁻¹
-    pub type Voltage = DimensionDiv<Power, ElectricCurrent>;
+    /// Electric potential, voltage (volt, V) = M·L²·T⁻³·A⁻¹
+    pub type Voltage = Dimension<N3, P2, P1, N1, Z0, Z0, Z0>;
 
-    /// Electrical resistance (ohm, Ω)
-    ///
-    /// M·L²·T⁻³·A⁻²
-    pub type Resistance = DimensionDiv<Voltage, ElectricCurrent>;
+    /// Electrical resistance (ohm, Ω) = M·L²·T⁻³·A⁻²
+    pub type Resistance = Dimension<N3, P2, P1, N2, Z0, Z0, Z0>;
 
-    /// Electrical conductance (siemens, S)
-    ///
-    /// M⁻¹·L⁻²·T³·A²
-    pub type Conductance = DimensionRecip<Resistance>;
+    /// Electrical conductance (siemens, S) = M⁻¹·L⁻²·T³·A²
+    pub type Conductance = Dimension<P3, N2, N1, P2, Z0, Z0, Z0>;
 
-    /// Electric charge (coulomb, C)
-    ///
-    /// T·A
-    pub type ElectricCharge = DimensionMul<Time, ElectricCurrent>;
+    /// Electric charge (coulomb, C) = T·A = s·A
+    pub type ElectricCharge = Dimension<P1, Z0, Z0, P1, Z0, Z0, Z0>;
 
-    /// Electrical capacitance (farad, F)
-    ///
-    /// M⁻¹·L⁻²·T⁴·A²
-    pub type Capacitance = DimensionDiv<ElectricCharge, Voltage>;
+    /// Electrical capacitance (farad, F) = M⁻¹·L⁻²·T⁴·A²
+    pub type Capacitance = Dimension<P4, N2, N1, P2, Z0, Z0, Z0>;
 
-    /// Magnetic flux (weber, Wb)
-    ///
-    /// M·L²·T⁻²·A⁻¹
-    pub type MagneticFlux = DimensionMul<Voltage, Time>;
+    /// Magnetic flux (weber, Wb) = M·L²·T⁻²·A⁻¹
+    pub type MagneticFlux = Dimension<N2, P2, P1, N1, Z0, Z0, Z0>;
 
-    /// Electrical inductance (henry, H)
-    ///
-    /// M·L²·T⁻²·A⁻²
-    pub type Inductance = DimensionDiv<MagneticFlux, ElectricCurrent>;
+    /// Electrical inductance (henry, H) = M·L²·T⁻²·A⁻²
+    pub type Inductance = Dimension<N2, P2, P1, N2, Z0, Z0, Z0>;
 
-    /// Magnetic flux density (tesla, T)
-    ///
-    /// M·T⁻²·A⁻¹
-    pub type MagneticFluxDensity = DimensionDiv<MagneticFlux, DimensionPow<Length, P2>>;
+    /// Magnetic flux density (tesla, T) = M·T⁻²·A⁻¹
+    /// Note: This is Wb/m² = M·L²·T⁻²·A⁻¹ / L² = M·T⁻²·A⁻¹
+    pub type MagneticFluxDensity = Dimension<N2, Z0, P1, N1, Z0, Z0, Z0>;
 
-    /// Pressure (pascal, Pa)
-    ///
-    /// M·L⁻¹·T⁻²
-    pub type Pressure = DimensionDiv<Force, DimensionPow<Length, P2>>;
+    /// Pressure (pascal, Pa) = M·L⁻¹·T⁻²
+    /// Note: This is N/m² = M·L·T⁻² / L² = M·L⁻¹·T⁻²
+    pub type Pressure = Dimension<N2, N1, P1, Z0, Z0, Z0, Z0>;
 }

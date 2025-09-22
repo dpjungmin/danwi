@@ -46,18 +46,6 @@ where
     }
 }
 
-impl<S, D> PartialEq for Quantity<S, D>
-where
-    S: Scalar + PartialEq,
-    D: Dimensions,
-{
-    fn eq(&self, other: &Self) -> bool {
-        let lhs_base = self.value.scale_by_power_of_10(self.unit.prefix);
-        let rhs_base = other.value.scale_by_power_of_10(other.unit.prefix);
-        lhs_base == rhs_base
-    }
-}
-
 // Quantity + Quantity
 impl<S, D> Add<Quantity<S, D>> for Quantity<S, D>
 where
@@ -226,6 +214,18 @@ impl<D: Dimensions> From<f32> for Quantity<F32Scalar, D> {
 impl<D: Dimensions> From<f64> for Quantity<F64Scalar, D> {
     fn from(value: f64) -> Self {
         Self::new(F64Scalar::new(value))
+    }
+}
+
+impl<S, D> PartialEq for Quantity<S, D>
+where
+    S: Scalar + PartialEq,
+    D: Dimensions,
+{
+    fn eq(&self, other: &Self) -> bool {
+        let lhs_base = self.value.scale_by_power_of_10(self.unit.prefix);
+        let rhs_base = other.value.scale_by_power_of_10(other.unit.prefix);
+        lhs_base == rhs_base
     }
 }
 

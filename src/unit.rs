@@ -27,11 +27,6 @@ impl<D: Dimensions> Unit<D> {
     }
 }
 
-pub trait UnitKind {
-    type Dimension;
-    const PREFIX: i8;
-}
-
 impl<D: Dimensions> Mul<Unit<D>> for f32 {
     type Output = Quantity<F32Scalar, D>;
 
@@ -70,11 +65,6 @@ macro_rules! define_units {
             paste::paste! {
                 pub struct [<$name:camel>];
 
-                impl UnitKind for [<$name:camel>] {
-                    type Dimension = $dimension;
-                    const PREFIX: i8 = prefix::BASE;
-                }
-
                 // constants
                 pub const [<G $symbol>]: Unit<$dimension> = Unit::with_prefix(prefix::GIGA);
                 pub const [<M $symbol>]: Unit<$dimension> = Unit::with_prefix(prefix::MEGA);
@@ -90,11 +80,98 @@ macro_rules! define_units {
                 pub type [<F64 $name:camel>] = Quantity<F64Scalar, $dimension>;
             }
         )*
+
+        pub mod ext {
+            #![allow(non_snake_case)]
+
+            use super::*;
+
+            paste::paste! {
+                pub trait F32QuantityExt {
+                    $(
+                        fn [<G $symbol>](self) -> Quantity<F32Scalar, $dimension>;
+                        fn [<M $symbol>](self) -> Quantity<F32Scalar, $dimension>;
+                        fn [<k $symbol>](self) -> Quantity<F32Scalar, $dimension>;
+                        fn $symbol(self) -> Quantity<F32Scalar, $dimension>;
+                        fn [<m $symbol>](self) -> Quantity<F32Scalar, $dimension>;
+                        fn [<u $symbol>](self) -> Quantity<F32Scalar, $dimension>;
+                        fn [<n $symbol>](self) -> Quantity<F32Scalar, $dimension>;
+                    )*
+                }
+
+                pub trait F64QuantityExt {
+                    $(
+                        fn [<G $symbol>](self) -> Quantity<F64Scalar, $dimension>;
+                        fn [<M $symbol>](self) -> Quantity<F64Scalar, $dimension>;
+                        fn [<k $symbol>](self) -> Quantity<F64Scalar, $dimension>;
+                        fn $symbol(self) -> Quantity<F64Scalar, $dimension>;
+                        fn [<m $symbol>](self) -> Quantity<F64Scalar, $dimension>;
+                        fn [<u $symbol>](self) -> Quantity<F64Scalar, $dimension>;
+                        fn [<n $symbol>](self) -> Quantity<F64Scalar, $dimension>;
+                    )*
+                }
+            }
+
+            paste::paste! {
+                impl F32QuantityExt for f32 {
+                    $(
+                        fn [<G $symbol>](self) -> Quantity<F32Scalar, $dimension> {
+                            // F32Scalar::new(self) * [<G $symbol>]
+                            Quantity::with_unit(F32Scalar::new(self), Unit::with_prefix(prefix::GIGA))
+                        }
+                        fn [<M $symbol>](self) -> Quantity<F32Scalar, $dimension> {
+                            Quantity::with_unit(F32Scalar::new(self), Unit::with_prefix(prefix::MEGA))
+                        }
+                        fn [<k $symbol>](self) -> Quantity<F32Scalar, $dimension> {
+                            Quantity::with_unit(F32Scalar::new(self), Unit::with_prefix(prefix::KILO))
+                        }
+                        fn $symbol(self) -> Quantity<F32Scalar, $dimension> {
+                            Quantity::new(F32Scalar::new(self))
+                        }
+                        fn [<m $symbol>](self) -> Quantity<F32Scalar, $dimension> {
+                            Quantity::with_unit(F32Scalar::new(self), Unit::with_prefix(prefix::MILLI))
+                        }
+                        fn [<u $symbol>](self) -> Quantity<F32Scalar, $dimension> {
+                            Quantity::with_unit(F32Scalar::new(self), Unit::with_prefix(prefix::MICRO))
+                        }
+                        fn [<n $symbol>](self) -> Quantity<F32Scalar, $dimension> {
+                            Quantity::with_unit(F32Scalar::new(self), Unit::with_prefix(prefix::NANO))
+                        }
+                    )*
+                }
+
+                impl F64QuantityExt for f64 {
+                    $(
+                        fn [<G $symbol>](self) -> Quantity<F64Scalar, $dimension> {
+                            Quantity::with_unit(F64Scalar::new(self), Unit::with_prefix(prefix::GIGA))
+                        }
+                        fn [<M $symbol>](self) -> Quantity<F64Scalar, $dimension> {
+                            Quantity::with_unit(F64Scalar::new(self), Unit::with_prefix(prefix::MEGA))
+                        }
+                        fn [<k $symbol>](self) -> Quantity<F64Scalar, $dimension> {
+                            Quantity::with_unit(F64Scalar::new(self), Unit::with_prefix(prefix::KILO))
+                        }
+                        fn $symbol(self) -> Quantity<F64Scalar, $dimension> {
+                            Quantity::new(F64Scalar::new(self))
+                        }
+                        fn [<m $symbol>](self) -> Quantity<F64Scalar, $dimension> {
+                            Quantity::with_unit(F64Scalar::new(self), Unit::with_prefix(prefix::MILLI))
+                        }
+                        fn [<u $symbol>](self) -> Quantity<F64Scalar, $dimension> {
+                            Quantity::with_unit(F64Scalar::new(self), Unit::with_prefix(prefix::MICRO))
+                        }
+                        fn [<n $symbol>](self) -> Quantity<F64Scalar, $dimension> {
+                            Quantity::with_unit(F64Scalar::new(self), Unit::with_prefix(prefix::NANO))
+                        }
+                    )*
+                }
+            }
+        }
     };
 }
 
-// base units
 define_units! {
+    // base units
     second (s): base::Time,
     metre (m): base::Length,
     kilogram (kg): base::Mass,
@@ -102,25 +179,21 @@ define_units! {
     kelvin (K): base::ThermodynamicTemperature,
     mole (mol): base::AmountOfSubstance,
     candela (cd): base::LuminousIntensity,
-}
 
-// common derived units
-define_units! {
+    // common derived units
     hertz (Hz): derived::Frequency,
-    // newton (N): derived::Force,
-    // joule (J): derived::Energy,
-    // watt (W): derived::Power,
-    // pascal (Pa): derived::Pressure,
-}
+    newton (N): derived::Force,
+    joule (J): derived::Energy,
+    watt (W): derived::Power,
+    pascal (Pa): derived::Pressure,
 
-// electrical units
-define_units! {
+    // electrical units
     volt (V): derived::Voltage,
     ohms (Ohm): derived::Resistance,
-    // siemens (S): derived::Conductance,
-    // coulomb (C): derived::ElectricCharge,
-    // farad (F): derived::Capacitance,
-    // henry (H): derived::Inductance,
-    // tesla (T): derived::MagneticFluxDensity,
-    // weber (Wb): derived::MagneticFlux,
+    siemens (S): derived::Conductance,
+    coulomb (C): derived::ElectricCharge,
+    farad (F): derived::Capacitance,
+    henry (H): derived::Inductance,
+    tesla (T): derived::MagneticFluxDensity,
+    weber (Wb): derived::MagneticFlux,
 }
