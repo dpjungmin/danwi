@@ -32,15 +32,36 @@ macro_rules! define_units {
                     pub const [<y $symbol>]: Unit<$dimension> = Unit::with_prefix(prefix::YOCTO);
                     pub const [<r $symbol>]: Unit<$dimension> = Unit::with_prefix(prefix::RONTO);
                     pub const [<q $symbol>]: Unit<$dimension> = Unit::with_prefix(prefix::QUECTO);
-
-                    // types aliases
-                    #[cfg(feature = "f32")]
-                    pub type [<F32 $name:camel>] = Quantity<F32Scalar, $dimension>;
-
-                    #[cfg(feature = "f64")]
-                    pub type [<F64 $name:camel>] = Quantity<F64Scalar, $dimension>;
                 }
             )*
+        }
+
+        pub mod types {
+            pub use super::*;
+
+            #[cfg(feature = "f32")]
+            pub mod f32 {
+                pub use super::*;
+                pub use crate::{F32Scalar, Quantity};
+
+                $(
+                    paste::paste! {
+                        pub type [<$name:camel>] = Quantity<F32Scalar, $dimension>;
+                    }
+                )*
+            }
+
+            #[cfg(feature = "f64")]
+            pub mod f64 {
+                pub use super::*;
+                pub use crate::{F64Scalar, Quantity};
+
+                $(
+                    paste::paste! {
+                        pub type [<$name:camel>] = Quantity<F64Scalar, $dimension>;
+                    }
+                )*
+            }
         }
 
         pub mod ext {

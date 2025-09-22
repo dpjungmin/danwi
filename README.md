@@ -6,14 +6,14 @@ checking, and `no_std` support.
 ## Usage
 
 ```rust
-use danwi::prelude::*;
+use danwi::f64::{QuantityExt, constants::*, types::*};
 
 // create a quantity by multiplying units
 let v = (5.0_f64 * mA) * (2.0_f64 * kOhm);
 assert_eq!(v, 10.0 * V);
 assert_eq!(v, 10.0.V()); // create a quantity using the extension trait
 assert_eq!(v.value(), 10.0);
-assert_eq!(v, F64Volt::from(10.0)); // create a quantity using type alias
+assert_eq!(v, Volt::from(10.0)); // create a quantity using type alias
 
 // convert between prefixes
 let mv = v.to(mV);
@@ -38,7 +38,7 @@ assert_eq!(t / 2.0.s(), 2.0);
 assert_eq!(t / 2e3.ms(), 2.0);
 
 // mixed units
-let a = F64Meter::from(100.0);
+let a = Meter::from(100.0);
 let b = 50.0 * cm;
 let c = 0.001 * km;
 let len = a + b + c;

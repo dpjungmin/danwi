@@ -20,7 +20,7 @@ pub mod f32 {
         F32QuantityExt as QuantityExt,
         quantity::Quantity,
         scalar::F32Scalar as Scalar,
-        unit::{Unit, constants},
+        unit::{Unit, constants, types::f32 as types},
     };
 }
 
@@ -30,15 +30,16 @@ pub mod f64 {
         F64QuantityExt as QuantityExt,
         quantity::Quantity,
         scalar::F64Scalar as Scalar,
-        unit::{Unit, constants},
+        unit::{Unit, constants, types::f64 as types},
     };
 }
 
+#[cfg(feature = "f64")]
 pub mod prelude {
     pub use crate::{
-        F64QuantityExt,
+        F64QuantityExt as QuantityExt,
         quantity::Quantity,
-        scalar::F64Scalar,
-        unit::{Unit, constants::*},
+        scalar::F64Scalar as Scalar,
+        unit::{Unit, constants::*, types::f64::*},
     };
 }
