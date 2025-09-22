@@ -17,12 +17,14 @@ where
     }
 }
 
+#[cfg(feature = "f32")]
 impl PartialEq<f32> for Quantity<F32Scalar, Dimensionless> {
     fn eq(&self, other: &f32) -> bool {
         self.value.get() == *other
     }
 }
 
+#[cfg(feature = "f64")]
 impl PartialEq<f64> for Quantity<F64Scalar, Dimensionless> {
     fn eq(&self, other: &f64) -> bool {
         self.value.get() == *other

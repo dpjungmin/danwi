@@ -178,25 +178,25 @@ pub type Dimensionless = Dimension<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
 pub mod base {
     use super::*;
 
-    /// Time (second, s) = T
+    /// Time (second, s)
     pub type Time = Dimension<P1, Z0, Z0, Z0, Z0, Z0, Z0>;
 
-    /// Length (metre, m) = L
+    /// Length (metre, m)
     pub type Length = Dimension<Z0, P1, Z0, Z0, Z0, Z0, Z0>;
 
-    /// Mass (kilogram, kg) = M
+    /// Mass (kilogram, kg)
     pub type Mass = Dimension<Z0, Z0, P1, Z0, Z0, Z0, Z0>;
 
-    /// Electric current (ampere, A) = A
+    /// Electric current (ampere, A)
     pub type ElectricCurrent = Dimension<Z0, Z0, Z0, P1, Z0, Z0, Z0>;
 
-    /// Thermodynamic temperature (kelvin, K) = K
+    /// Thermodynamic temperature (kelvin, K)
     pub type ThermodynamicTemperature = Dimension<Z0, Z0, Z0, Z0, P1, Z0, Z0>;
 
-    /// Amount of substance (mole, mol) = mol
+    /// Amount of substance (mole, mol)
     pub type AmountOfSubstance = Dimension<Z0, Z0, Z0, Z0, Z0, P1, Z0>;
 
-    /// Luminous intensity (candela, cd) = cd
+    /// Luminous intensity (candela, cd)
     pub type LuminousIntensity = Dimension<Z0, Z0, Z0, Z0, Z0, Z0, P1>;
 }
 

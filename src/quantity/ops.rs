@@ -68,6 +68,7 @@ where
 }
 
 // Quantity * f32
+#[cfg(feature = "f32")]
 impl<D: Dimensions> Mul<f32> for Quantity<F32Scalar, D> {
     type Output = Quantity<F32Scalar, D>;
 
@@ -78,6 +79,7 @@ impl<D: Dimensions> Mul<f32> for Quantity<F32Scalar, D> {
 }
 
 // Quantity * f64
+#[cfg(feature = "f64")]
 impl<D: Dimensions> Mul<f64> for Quantity<F64Scalar, D> {
     type Output = Quantity<F64Scalar, D>;
 
@@ -88,6 +90,7 @@ impl<D: Dimensions> Mul<f64> for Quantity<F64Scalar, D> {
 }
 
 // f32 * Quantity
+#[cfg(feature = "f32")]
 impl<D: Dimensions> Mul<Quantity<F32Scalar, D>> for f32 {
     type Output = Quantity<F32Scalar, D>;
 
@@ -98,6 +101,7 @@ impl<D: Dimensions> Mul<Quantity<F32Scalar, D>> for f32 {
 }
 
 // f64 * Quantity
+#[cfg(feature = "f64")]
 impl<D: Dimensions> Mul<Quantity<F64Scalar, D>> for f64 {
     type Output = Quantity<F64Scalar, D>;
 
@@ -108,6 +112,7 @@ impl<D: Dimensions> Mul<Quantity<F64Scalar, D>> for f64 {
 }
 
 // Quantity / f32
+#[cfg(feature = "f32")]
 impl<D: Dimensions> Div<f32> for Quantity<F32Scalar, D> {
     type Output = Quantity<F32Scalar, D>;
 
@@ -118,6 +123,7 @@ impl<D: Dimensions> Div<f32> for Quantity<F32Scalar, D> {
 }
 
 // Quantity / f64
+#[cfg(feature = "f64")]
 impl<D: Dimensions> Div<f64> for Quantity<F64Scalar, D> {
     type Output = Quantity<F64Scalar, D>;
 
@@ -128,6 +134,7 @@ impl<D: Dimensions> Div<f64> for Quantity<F64Scalar, D> {
 }
 
 // f32 / Quantity
+#[cfg(feature = "f32")]
 impl<D> Div<Quantity<F32Scalar, D>> for f32
 where
     D: CanReciprocate,
@@ -142,6 +149,7 @@ where
 }
 
 // f64 / Quantity
+#[cfg(feature = "f64")]
 impl<D> Div<Quantity<F64Scalar, D>> for f64
 where
     D: CanReciprocate,

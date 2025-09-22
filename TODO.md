@@ -9,6 +9,5 @@
 - add feature flags for conditional compilation
   - unit categories (electrical, mechanical, etc.)
   - prefix sets (common vs. all)
-  - scalar types (i.e., f32, f64)
 - add docs
 - add doc-tests

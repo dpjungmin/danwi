@@ -71,5 +71,8 @@ macro_rules! impl_float_scalar {
     };
 }
 
+#[cfg(feature = "f32")]
 impl_float_scalar!(F32Scalar, f32);
+
+#[cfg(feature = "f64")]
 impl_float_scalar!(F64Scalar, f64);

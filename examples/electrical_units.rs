@@ -1,4 +1,7 @@
-use danwi::prelude::*;
+use danwi::f64::{
+    QuantityExt,
+    constants::{A, V, mA, mV},
+};
 
 fn main() {
     let adc_count = 2048_u16;

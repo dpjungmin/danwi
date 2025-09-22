@@ -2,7 +2,11 @@ mod float;
 
 use core::fmt::{Debug, Display};
 
-pub use float::{F32Scalar, F64Scalar};
+#[cfg(feature = "f32")]
+pub use float::F32Scalar;
+
+#[cfg(feature = "f64")]
+pub use float::F64Scalar;
 
 pub trait Scalar: Clone + Debug + PartialEq + Sized {
     type Value: Clone + Debug + PartialEq + Display;

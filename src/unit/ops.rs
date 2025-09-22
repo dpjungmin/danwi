@@ -6,6 +6,7 @@ use crate::{
 };
 use core::ops::Mul;
 
+#[cfg(feature = "f32")]
 impl<D: Dimensions> Mul<Unit<D>> for f32 {
     type Output = Quantity<F32Scalar, D>;
 
@@ -14,6 +15,7 @@ impl<D: Dimensions> Mul<Unit<D>> for f32 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl<D: Dimensions> Mul<Unit<D>> for f64 {
     type Output = Quantity<F64Scalar, D>;
 
@@ -22,6 +24,7 @@ impl<D: Dimensions> Mul<Unit<D>> for f64 {
     }
 }
 
+#[cfg(feature = "f32")]
 impl<D: Dimensions> Mul<Unit<D>> for F32Scalar {
     type Output = Quantity<F32Scalar, D>;
 
@@ -30,6 +33,7 @@ impl<D: Dimensions> Mul<Unit<D>> for F32Scalar {
     }
 }
 
+#[cfg(feature = "f64")]
 impl<D: Dimensions> Mul<Unit<D>> for F64Scalar {
     type Output = Quantity<F64Scalar, D>;
 

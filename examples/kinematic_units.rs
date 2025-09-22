@@ -1,4 +1,4 @@
-use danwi::prelude::*;
+use danwi::f32::{QuantityExt, constants::kmps2};
 
 fn main() {
     let velocity = 10.0.mps(); // 10 m/s
@@ -11,5 +11,5 @@ fn main() {
     assert_eq!(distance, 75.0.m());
 
     let accel_in_km = acceleration.to(kmps2);
-    assert_eq!(accel_in_km, 200.0.kmps2());
+    assert_eq!(accel_in_km, 0.002.kmps2());
 }
