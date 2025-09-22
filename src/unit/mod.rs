@@ -35,7 +35,7 @@ define_units! {
     // base units
     second (s): base::Time,
     meter (m): base::Length,
-    kilogram (kg): base::Mass,
+    gram (g): base::Mass, // kilogram is the base unit
     ampere (A): base::ElectricCurrent,
     kelvin (K): base::ThermodynamicTemperature,
     mole (mol): base::AmountOfSubstance,

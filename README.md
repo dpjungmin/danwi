@@ -29,12 +29,13 @@ assert_eq!(i, 5.0.mA());
 let period = 1.0.s();
 let freq = 1.0 / period;
 assert_eq!(freq, 1.0.Hz());
+assert_eq!(freq, 1.0.hertz());
 
 // add units
 let t = 1.0.s() + 1e3.ms() + 1e6.us() + 1e9.ns();
-assert_eq!(t, 4.0 * s);
-assert_eq!(t / (2.0 * s), 2.0);
-assert_eq!(t / (2e3 * ms), 2.0);
+assert_eq!(t, 4.0.second());
+assert_eq!(t / 2.0.s(), 2.0);
+assert_eq!(t / 2e3.ms(), 2.0);
 
 // mixed units
 let a = F64Meter::from(100.0);
