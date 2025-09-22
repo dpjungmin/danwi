@@ -1,5 +1,3 @@
-> **Work in progress**
-
 # danwi
 
 A dimensional analysis library for Rust with SI units, compile-time type
@@ -17,7 +15,7 @@ assert_eq!(v.value(), 10.0);
 assert_eq!(v, F64Volt::from(10.0)); // create a quantity using type alias
 
 // convert between prefixes
-let mv = v.to::<Millivolt>();
+let mv = v.to(mV);
 assert_eq!(mv.value(), 10000.0);
 assert_eq!(mv, 10000.0 * mV);
 assert_eq!(mv, 10.0 * V);
@@ -41,6 +39,6 @@ let c = 0.001 * km;
 let len = a + b + c;
 println!("Length: {} m", len.value()); // Length: 101.5 m
 println!("Length: {} m", len); // Length: 101.5 m
-println!("Length: {} cm", len.to::<Centimetre>()); // Length: 10150 cm
-println!("Length: {} km", len.to::<Kilometre>()); // Length: 0.1015 km
+println!("Length: {} cm", len.to(cm)); // Length: 10150 cm
+println!("Length: {} km", len.to(km)); // Length: 0.1015 km
 ```

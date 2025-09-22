@@ -1,7 +1,7 @@
 use crate::{
     dimension::{CanDivideBy, CanMultiplyWith, CanReciprocate, Dimensionless, Dimensions},
     scalar::{F32Scalar, F64Scalar, Scalar},
-    unit::{Unit, UnitKind},
+    unit::Unit,
 };
 use core::{
     fmt,
@@ -39,10 +39,10 @@ where
     }
 
     #[inline]
-    pub fn to<U: UnitKind<Dimension = D>>(&self) -> Self {
-        let prefix_diff = self.unit.prefix - U::PREFIX;
+    pub fn to(&self, target_unit: Unit<D>) -> Self {
+        let prefix_diff = self.unit.prefix - target_unit.prefix;
         let scaled_value = self.value.scale_by_power_of_10(prefix_diff);
-        Self::with_unit(scaled_value, Unit::with_prefix(U::PREFIX))
+        Self::with_unit(scaled_value, target_unit)
     }
 }
 
