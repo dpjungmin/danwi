@@ -11,7 +11,7 @@ checking, and `no_std` support.
 use danwi::prelude::*;
 
 // create a quantity by multiplying units
-let v = (5.0_f64 * mA) * (2.0 * kOhm);
+let v = (5.0_f64 * mA) * (2.0_f64 * kOhm);
 assert_eq!(v, 10.0 * V);
 assert_eq!(v.value(), 10.0);
 assert_eq!(v, F64Volt::from(10.0)); // create a quantity using type alias
@@ -42,9 +42,5 @@ let len = a + b + c;
 println!("Length: {} m", len.value()); // Length: 101.5 m
 println!("Length: {} m", len); // Length: 101.5 m
 println!("Length: {} cm", len.to::<Centimetre>()); // Length: 10150 cm
-println!("Length: {} km", len.to::<Kilometre>()); // Length: 0.1015 m
+println!("Length: {} km", len.to::<Kilometre>()); // Length: 0.1015 km
 ```
-
-## TODO
-
-- [TODO.md](./TODO.md)

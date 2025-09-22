@@ -6,7 +6,7 @@ fn main() {
     let v = v_ref * (adc_count as f64 / 4096.0);
     println!("{:.3} mV", v.to::<Millivolt>()); // 1650 mV
 
-    let i = (50.0_f64 * mV) / (0.1 * Ohm);
+    let i = (50.0_f64 * mV) / (0.1_f64 * Ohm);
     println!("{:.3} mA", i.to::<Milliampere>()); // 500 mA
 
     let p = (12.0 * V) * (0.5 * A);

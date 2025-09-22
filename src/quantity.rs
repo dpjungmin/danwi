@@ -160,6 +160,26 @@ impl<D: Dimensions> Mul<Quantity<F64Scalar, D>> for f64 {
     }
 }
 
+// Quantity / f32
+impl<D: Dimensions> Div<f32> for Quantity<F32Scalar, D> {
+    type Output = Quantity<F32Scalar, D>;
+
+    #[inline]
+    fn div(self, rhs: f32) -> Self::Output {
+        Self::with_unit(F32Scalar::new(self.value.get() / rhs), self.unit)
+    }
+}
+
+// Quantity / f64
+impl<D: Dimensions> Div<f64> for Quantity<F64Scalar, D> {
+    type Output = Quantity<F64Scalar, D>;
+
+    #[inline]
+    fn div(self, rhs: f64) -> Self::Output {
+        Self::with_unit(F64Scalar::new(self.value.get() / rhs), self.unit)
+    }
+}
+
 // f32 / Quantity
 impl<D> Div<Quantity<F32Scalar, D>> for f32
 where
