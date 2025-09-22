@@ -1,5 +1,6 @@
 # TODO
 
+- impl approx for Quantity comparison
 - codegen dimensions/units from a text file
 - add binary prefixes (i.e., kibi, mebi, gibi, etc.)
 - organize by trait category

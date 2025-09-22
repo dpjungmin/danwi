@@ -18,23 +18,26 @@ assert_eq!(v, F64Volt::from(10.0)); // create a quantity using type alias
 // convert between prefixes
 let mv = v.to(mV);
 assert_eq!(mv.value(), 10000.0);
-assert_eq!(mv, 10000.0 * mV);
-assert_eq!(mv, 10.0 * V);
-assert_eq!(mv, 0.01 * kV);
+assert_eq!(mv, 10000.0.mV());
+assert_eq!(mv, 10.0.V());
+assert_eq!(mv, 0.01.kV());
 
-let i = v / (2.0 * kOhm);
-assert_eq!(i, 5.0 * mA);
-
-let t = (1.0_f64 * s) + (1e3 * ms) + (1e6 * us) + (1e9 * ns);
-assert_eq!(t, 4.0 * s);
-assert_eq!(t / (2.0 * s), 2.0);
-assert_eq!(t / (2e3 * ms), 2.0);
+// divide units
+let i = v / 2.0.kOhm();
+assert_eq!(i, 5.0.mA());
 
 let period = 1.0.s();
 let freq = 1.0 / period;
 assert_eq!(freq, 1.0.Hz());
 
-let a = F64Metre::from(100.0);
+// add units
+let t = 1.0.s() + 1e3.ms() + 1e6.us() + 1e9.ns();
+assert_eq!(t, 4.0 * s);
+assert_eq!(t / (2.0 * s), 2.0);
+assert_eq!(t / (2e3 * ms), 2.0);
+
+// mixed units
+let a = F64Meter::from(100.0);
 let b = 50.0 * cm;
 let c = 0.001 * km;
 let len = a + b + c;

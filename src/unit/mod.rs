@@ -34,7 +34,7 @@ impl<D: Dimensions> Unit<D> {
 define_units! {
     // base units
     second (s): base::Time,
-    metre (m): base::Length,
+    meter (m): base::Length,
     kilogram (kg): base::Mass,
     ampere (A): base::ElectricCurrent,
     kelvin (K): base::ThermodynamicTemperature,
@@ -57,4 +57,8 @@ define_units! {
     henry (H): derived::Inductance,
     tesla (T): derived::MagneticFluxDensity,
     weber (Wb): derived::MagneticFlux,
+
+    // kinematic units
+    meter_per_second (mps): derived::Velocity,
+    meter_per_second_squared (mps2): derived::Acceleration,
 }

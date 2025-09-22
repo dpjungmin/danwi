@@ -2,8 +2,6 @@ macro_rules! define_units {
     ($($name:ident ($symbol:ident): $dimension:ty),* $(,)?) => {
         $(
             paste::paste! {
-                pub struct [<$name:camel>];
-
                 // constants
                 pub const [<Q $symbol>]: Unit<$dimension> = Unit::with_prefix(prefix::QUETTA);
                 pub const [<R $symbol>]: Unit<$dimension> = Unit::with_prefix(prefix::RONNA);
