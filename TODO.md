@@ -1,5 +1,6 @@
 # TODO
 
+- codegen dimensions/units from a text file
 - add binary prefixes (i.e., kibi, mebi, gibi, etc.)
 - organize by trait category
 - add more SI derived units

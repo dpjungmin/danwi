@@ -10,7 +10,6 @@ pub const MEGA: i8 = 6;
 pub const KILO: i8 = 3;
 pub const HECTO: i8 = 2;
 pub const DECA: i8 = 1;
-pub const BASE: i8 = 0;
 pub const DECI: i8 = -1;
 pub const CENTI: i8 = -2;
 pub const MILLI: i8 = -3;
