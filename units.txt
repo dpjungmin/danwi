@@ -1,0 +1,31 @@
+# name                    symbol  dimension
+
+# base
+second                    s       time
+meter                     m       length
+gram                      g       mass
+ampere                    A       electric_current
+kelvin                    K       thermodynamic_temperature
+mole                      mol     amount_of_substance
+candela                   cd      luminous_intensity
+
+# kinematic
+hertz                     Hz      frequency
+meter_per_second          mps     velocity
+meter_per_second_squared  mps2    acceleration
+
+# mechanical
+newton                    N       force
+joule                     J       energy
+watt                      W       power
+pascal                    Pa      pressure
+
+# electrical
+volt                      V       voltage
+ohms                      Ohm     resistance
+siemens                   S       conductance
+coulomb                   C       electric_charge
+farad                     F       capacitance
+henry                     H       inductance
+tesla                     T       magnetic_flux_density
+weber                     Wb      magnetic_flux
