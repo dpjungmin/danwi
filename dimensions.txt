@@ -1,0 +1,29 @@
+# name:                     T  L  M  I  K  N  J  # optional doc
+
+dimensionless:              0  0  0  0  0  0  0  # Dimensionless unit (pure number).
+
+# base dimensions
+time:                       1  0  0  0  0  0  0  # Time (second, s) = T
+length:                     0  1  0  0  0  0  0  # Length (metre, m) = L
+mass:                       0  0  1  0  0  0  0  # Mass (kilogram, kg) = M
+electric_current:           0  0  0  1  0  0  0  # Electric current (ampere, A) = I
+thermodynamic_temperature:  0  0  0  0  1  0  0  # Temperature (kelvin, K) = K
+amount_of_substance:        0  0  0  0  0  1  0  # Amount of substance (mole, mol) = N
+luminous_intensity:         0  0  0  0  0  0  1  # Luminous intensity (candela, cd) = J
+
+# derived dimensions
+frequency:                  -1 0  0  0  0  0  0  # Frequency (hertz, Hz) = T⁻¹
+velocity:                   -1 1  0  0  0  0  0  # Velocity (metre per second, m/s) = L·T⁻¹
+acceleration:               -2 1  0  0  0  0  0  # Acceleration (metre per second squared, m/s²) = L·T⁻²
+force:                      -2 1  1  0  0  0  0  # Force (newton, N) = M·L·T⁻² = kg·m/s²
+energy:                     -2 2  1  0  0  0  0  # Energy, work, heat (joule, J) = M·L²·T⁻² = kg·m²/s²
+power:                      -3 2  1  0  0  0  0  # Power (watt, W) = M·L²·T⁻³ = kg·m²/s³
+voltage:                    -3 2  1  -1 0  0  0  # Voltage (volt, V) = M·L²·T⁻³·I⁻¹
+resistance:                 -3 2  1  -2 0  0  0  # Resistance (ohm, Ω) = M·L²·T⁻³·I⁻²
+conductance:                3  -2 -1 2  0  0  0  # Conductance (siemens, S) = M⁻¹·L⁻²·T³·I²
+electric_charge:            1  0  0  1  0  0  0  # Charge (coulomb, C) = T·I
+capacitance:                4  -2 -1 2  0  0  0  # Capacitance (farad, F) = M⁻¹·L⁻²·T⁴·I²
+magnetic_flux:              -2 2  1  -1 0  0  0  # Magnetic flux (weber, Wb) = M·L²·T⁻²·I⁻¹
+inductance:                 -2 2  1  -2 0  0  0  # Inductance (henry, H) = M·L²·T⁻²·I⁻²
+magnetic_flux_density:      -2 0  1  -1 0  0  0  # Magnetic flux density (tesla, T) = M·T⁻²·I⁻¹
+pressure:                   -2 -1 1  0  0  0  0  # Pressure (pascal, Pa) = M·L⁻¹·T⁻²

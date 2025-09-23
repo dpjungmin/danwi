@@ -1,6 +1,6 @@
 use super::Quantity;
 use crate::{
-    dimension::{Dimensionless, Dimensions},
+    dimension::{Dimensions, generated::Dimensionless},
     scalar::{F32Scalar, F64Scalar, Scalar},
 };
 use core::cmp::Ordering;

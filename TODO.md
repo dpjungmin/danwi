@@ -1,9 +1,8 @@
 # TODO
 
 - impl approx for Quantity comparison
-- codegen dimensions/units from a text file
+- codegen units from a config file
 - add binary prefixes (i.e., kibi, mebi, gibi, etc.)
-- organize by trait category
 - add more SI derived units
 - add common mathematical operations (`abs`, `powi`, `sqrt`)
 - add feature flags for conditional compilation

@@ -1,14 +1,18 @@
 use danwi::f64::{
     QuantityExt,
     constants::{A, V, mA, mV},
+    types::Volt,
 };
 
-fn main() {
-    let adc_count = 2048_u16;
+fn scale_adc_counts_to_e(count: u16) -> Volt {
     let v_ref = 3.3.V();
-    let v = v_ref * (adc_count as f64 / 4096.0);
-    println!("{:.3} V", v); // 1.65 V
-    println!("{:.3} mV", v.to(mV)); // 1650 mV
+    v_ref * (count as f64 / 4096.0)
+}
+
+fn main() {
+    let e = scale_adc_counts_to_e(2048);
+    println!("{:.3} V", e); // 1.65 V
+    println!("{:.3} mV", e.to(mV)); // 1650 mV
 
     let i = 50.0.mV() / 0.1.Ohm();
     println!("{:.3} mA", i.to(mA)); // 500 mA

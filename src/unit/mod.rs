@@ -1,7 +1,7 @@
 #![allow(non_upper_case_globals)]
 
 use crate::{
-    dimension::{Dimensions, base, derived},
+    dimension::{Dimensions, generated::*},
     quantity::Quantity,
     scalar::{F32Scalar, F64Scalar},
 };
@@ -33,32 +33,32 @@ impl<D: Dimensions> Unit<D> {
 
 define_units! {
     // base units
-    second (s): base::Time,
-    meter (m): base::Length,
-    gram (g): base::Mass, // kilogram is the base unit
-    ampere (A): base::ElectricCurrent,
-    kelvin (K): base::ThermodynamicTemperature,
-    mole (mol): base::AmountOfSubstance,
-    candela (cd): base::LuminousIntensity,
+    second (s): Time,
+    meter (m): Length,
+    gram (g): Mass, // kilogram is the base unit
+    ampere (A): ElectricCurrent,
+    kelvin (K): ThermodynamicTemperature,
+    mole (mol): AmountOfSubstance,
+    candela (cd): LuminousIntensity,
 
     // common derived units
-    hertz (Hz): derived::Frequency,
-    newton (N): derived::Force,
-    joule (J): derived::Energy,
-    watt (W): derived::Power,
-    pascal (Pa): derived::Pressure,
+    hertz (Hz): Frequency,
+    newton (N): Force,
+    joule (J): Energy,
+    watt (W): Power,
+    pascal (Pa): Pressure,
 
     // electrical units
-    volt (V): derived::Voltage,
-    ohms (Ohm): derived::Resistance,
-    siemens (S): derived::Conductance,
-    coulomb (C): derived::ElectricCharge,
-    farad (F): derived::Capacitance,
-    henry (H): derived::Inductance,
-    tesla (T): derived::MagneticFluxDensity,
-    weber (Wb): derived::MagneticFlux,
+    volt (V): Voltage,
+    ohms (Ohm): Resistance,
+    siemens (S): Conductance,
+    coulomb (C): ElectricCharge,
+    farad (F): Capacitance,
+    henry (H): Inductance,
+    tesla (T): MagneticFluxDensity,
+    weber (Wb): MagneticFlux,
 
     // kinematic units
-    meter_per_second (mps): derived::Velocity,
-    meter_per_second_squared (mps2): derived::Acceleration,
+    meter_per_second (mps): Velocity,
+    meter_per_second_squared (mps2): Acceleration,
 }
