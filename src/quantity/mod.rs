@@ -1,4 +1,4 @@
-use crate::{dimension::Dimensions, scalar::Scalar, unit::Unit};
+use crate::{F32Scalar, F64Scalar, dimension::Dimensions, scalar::Scalar, unit::Unit};
 
 mod cmp;
 mod convert;
@@ -21,7 +21,7 @@ where
     D: Dimensions,
 {
     #[inline]
-    pub(crate) const fn with_unit(value: S, unit: Unit<D>) -> Self {
+    pub const fn with_unit(value: S, unit: Unit<D>) -> Self {
         Self { value, unit }
     }
 
@@ -40,5 +40,25 @@ where
         let prefix_diff = self.unit.prefix - target_unit.prefix;
         let scaled_value = self.value.scale_by_power_of_10(prefix_diff);
         Self::with_unit(scaled_value, target_unit)
+    }
+}
+
+impl<D: Dimensions> Quantity<F32Scalar, D> {
+    #[inline]
+    pub const fn from_f32(value: f32, unit: Unit<D>) -> Self {
+        Self {
+            value: F32Scalar::new(value),
+            unit,
+        }
+    }
+}
+
+impl<D: Dimensions> Quantity<F64Scalar, D> {
+    #[inline]
+    pub const fn from_f64(value: f64, unit: Unit<D>) -> Self {
+        Self {
+            value: F64Scalar::new(value),
+            unit,
+        }
     }
 }
