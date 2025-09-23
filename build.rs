@@ -104,7 +104,6 @@ mod dimensions {
         writeln!(&mut code, "// Do not edit manually!")?;
         writeln!(&mut code, "// Source: dimensions.txt")?;
         writeln!(&mut code)?;
-        writeln!(&mut code, "use crate::dimension::Dimension;")?;
         writeln!(&mut code, "use typenum::*;")?;
         writeln!(&mut code)?;
 

@@ -21,12 +21,12 @@ where
     D: Dimensions,
 {
     #[inline]
-    pub(crate) fn with_unit(value: S, unit: Unit<D>) -> Self {
+    pub(crate) const fn with_unit(value: S, unit: Unit<D>) -> Self {
         Self { value, unit }
     }
 
     #[inline]
-    pub fn new(value: S) -> Self {
+    pub const fn new(value: S) -> Self {
         Self::with_unit(value, Unit::base())
     }
 

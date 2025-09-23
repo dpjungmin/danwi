@@ -17,21 +17,27 @@ pub use unit::{
 #[cfg(feature = "f32")]
 pub mod f32 {
     pub use crate::{
-        F32QuantityExt as QuantityExt,
+        F32QuantityExt as QuantityExt, dimension,
         quantity::Quantity,
         scalar::F32Scalar as Scalar,
         unit::{Unit, constants, types::f32 as types},
     };
+
+    /// Standard gravitational acceleration (9.80665 m/s²).
+    pub const G_0: Quantity<Scalar, dimension::Acceleration> = Quantity::new(Scalar::new(9.80665));
 }
 
 #[cfg(feature = "f64")]
 pub mod f64 {
     pub use crate::{
-        F64QuantityExt as QuantityExt,
+        F64QuantityExt as QuantityExt, dimension,
         quantity::Quantity,
         scalar::F64Scalar as Scalar,
         unit::{Unit, constants, types::f64 as types},
     };
+
+    /// Standard gravitational acceleration (9.80665 m/s²).
+    pub const G_0: Quantity<Scalar, dimension::Acceleration> = Quantity::new(Scalar::new(9.80665));
 }
 
 #[cfg(feature = "f64")]

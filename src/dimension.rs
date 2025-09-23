@@ -172,6 +172,4 @@ where
     type Output = DimensionRecip<D>;
 }
 
-pub mod generated {
-    include!(concat!(env!("OUT_DIR"), "/dimensions_generated.rs"));
-}
+include!(concat!(env!("OUT_DIR"), "/dimensions_generated.rs"));

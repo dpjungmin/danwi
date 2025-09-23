@@ -1,7 +1,7 @@
 #![allow(non_upper_case_globals)]
 
 use crate::{
-    dimension::{Dimensions, generated::*},
+    dimension::*,
     quantity::Quantity,
     scalar::{F32Scalar, F64Scalar},
 };
