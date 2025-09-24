@@ -1,5 +1,10 @@
 # danwi
 
+[![build](https://github.com/dpjungmin/danwi/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/dpjungmin/danwi/actions/workflows/rust.yml)
+[![Crates.io Version](https://img.shields.io/crates/v/danwi)](https://crates.io/crates/danwi)
+[![Crates.io License](https://img.shields.io/crates/l/danwi)](https://crates.io/crates/danwi)
+[![docs.rs](https://img.shields.io/docsrs/danwi)](https://docs.rs/danwi)
+
 A dimensional analysis library for Rust with SI units, compile-time type
 checking, and `no_std` support.
 
