@@ -19,12 +19,13 @@ pub mod f32 {
     pub use crate::{
         F32QuantityExt as QuantityExt, dimension,
         quantity::Quantity,
-        scalar::F32Scalar as Scalar,
+        scalar::F32Scalar,
         unit::{Unit, constants, types::f32 as types},
     };
 
     /// Standard gravitational acceleration (9.80665 m/s²).
-    pub const G_0: Quantity<Scalar, dimension::Acceleration> = Quantity::new(Scalar::new(9.80665));
+    pub const G_0: Quantity<F32Scalar, dimension::Acceleration> =
+        Quantity::new(F32Scalar::new(9.80665));
 }
 
 #[cfg(feature = "f64")]
@@ -32,12 +33,13 @@ pub mod f64 {
     pub use crate::{
         F64QuantityExt as QuantityExt, dimension,
         quantity::Quantity,
-        scalar::F64Scalar as Scalar,
+        scalar::F64Scalar,
         unit::{Unit, constants, types::f64 as types},
     };
 
     /// Standard gravitational acceleration (9.80665 m/s²).
-    pub const G_0: Quantity<Scalar, dimension::Acceleration> = Quantity::new(Scalar::new(9.80665));
+    pub const G_0: Quantity<F64Scalar, dimension::Acceleration> =
+        Quantity::new(F64Scalar::new(9.80665));
 }
 
 #[cfg(feature = "f64")]
