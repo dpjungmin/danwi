@@ -1,5 +1,6 @@
 # TODO
 
+- move scaling factor into associated constants
 - add docs
 - add doc-tests
 - add binary prefixes (i.e., kibi, mebi, gibi, etc.)
