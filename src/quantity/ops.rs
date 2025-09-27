@@ -66,7 +66,7 @@ impl<D: Dimensions> Mul<f32> for Quantity<f32, D> {
 
     #[inline]
     fn mul(self, rhs: f32) -> Self::Output {
-        Self::with_unit(self.value() * rhs, self.unit)
+        Self::with_unit(self.value * rhs, self.unit)
     }
 }
 
@@ -77,7 +77,7 @@ impl<D: Dimensions> Mul<f64> for Quantity<f64, D> {
 
     #[inline]
     fn mul(self, rhs: f64) -> Self::Output {
-        Self::with_unit(self.value() * rhs, self.unit)
+        Self::with_unit(self.value * rhs, self.unit)
     }
 }
 
@@ -88,7 +88,7 @@ impl<D: Dimensions> Mul<Quantity<f32, D>> for f32 {
 
     #[inline]
     fn mul(self, rhs: Quantity<f32, D>) -> Self::Output {
-        Quantity::with_unit(self * rhs.value(), rhs.unit)
+        Quantity::with_unit(self * rhs.value, rhs.unit)
     }
 }
 
@@ -99,7 +99,7 @@ impl<D: Dimensions> Mul<Quantity<f64, D>> for f64 {
 
     #[inline]
     fn mul(self, rhs: Quantity<f64, D>) -> Self::Output {
-        Quantity::with_unit(self * rhs.value(), rhs.unit)
+        Quantity::with_unit(self * rhs.value, rhs.unit)
     }
 }
 
@@ -110,7 +110,7 @@ impl<D: Dimensions> Div<f32> for Quantity<f32, D> {
 
     #[inline]
     fn div(self, rhs: f32) -> Self::Output {
-        Self::with_unit(self.value() / rhs, self.unit)
+        Self::with_unit(self.value / rhs, self.unit)
     }
 }
 
@@ -121,7 +121,7 @@ impl<D: Dimensions> Div<f64> for Quantity<f64, D> {
 
     #[inline]
     fn div(self, rhs: f64) -> Self::Output {
-        Self::with_unit(self.value() / rhs, self.unit)
+        Self::with_unit(self.value / rhs, self.unit)
     }
 }
 
@@ -177,6 +177,6 @@ where
     type Output = Quantity<S, D>;
 
     fn neg(self) -> Self::Output {
-        Self::with_unit(self.value.neg(), self.unit)
+        Self::with_unit(-self.value, self.unit)
     }
 }
