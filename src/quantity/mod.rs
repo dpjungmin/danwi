@@ -42,17 +42,3 @@ where
         Self::with_unit(scaled_value, target_unit)
     }
 }
-
-impl<D: Dimensions> Quantity<f32, D> {
-    #[inline]
-    pub const fn from_f32(value: f32, unit: Unit<D>) -> Self {
-        Self { value, unit }
-    }
-}
-
-impl<D: Dimensions> Quantity<f64, D> {
-    #[inline]
-    pub const fn from_f64(value: f64, unit: Unit<D>) -> Self {
-        Self { value, unit }
-    }
-}

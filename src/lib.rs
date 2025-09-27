@@ -24,7 +24,7 @@ pub mod f32 {
     };
 
     /// Standard gravitational acceleration (9.80665 m/s²).
-    pub const G_0: Quantity<f32, dimension::Acceleration> = Quantity::from_f32_const(9.80665);
+    pub const G_0: Quantity<f32, dimension::Acceleration> = Quantity::from_f32(9.80665);
 }
 
 #[cfg(feature = "f64")]
@@ -37,7 +37,7 @@ pub mod f64 {
     };
 
     /// Standard gravitational acceleration (9.80665 m/s²).
-    pub const G_0: Quantity<f64, dimension::Acceleration> = Quantity::from_f64_const(9.80665);
+    pub const G_0: Quantity<f64, dimension::Acceleration> = Quantity::from_f64(9.80665);
 }
 
 #[cfg(feature = "f64")]
