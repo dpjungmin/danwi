@@ -1,22 +1,25 @@
 mod float;
 
-use core::fmt::{Debug, Display};
+use core::{
+    fmt::{Debug, Display},
+    ops::{Add, Div, Mul, Neg, Sub},
+};
 
-#[cfg(feature = "f32")]
-pub use float::F32Scalar;
-
-#[cfg(feature = "f64")]
-pub use float::F64Scalar;
-
-pub trait Scalar: Clone + Debug + PartialEq + Sized {
-    type Value: Clone + Debug + PartialEq + Display;
-
-    fn get(&self) -> Self::Value;
+pub trait Scalar:
+    Add<Output = Self>
+    + Sub<Output = Self>
+    + Mul<Output = Self>
+    + Div<Output = Self>
+    + Neg<Output = Self>
+    + Copy
+    + Clone
+    + Debug
+    + Display
+    + PartialEq
+    + PartialOrd
+    + Default
+    + Sized
+{
+    fn zero() -> Self;
     fn scale_by_power_of_10(&self, exponent: i8) -> Self;
-
-    fn add(&self, other: &Self) -> Self;
-    fn sub(&self, other: &Self) -> Self;
-    fn mul(&self, other: &Self) -> Self;
-    fn div(&self, other: &Self) -> Self;
-    fn neg(&self) -> Self;
 }

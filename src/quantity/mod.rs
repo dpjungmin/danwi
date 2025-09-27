@@ -1,4 +1,4 @@
-use crate::{F32Scalar, F64Scalar, dimension::Dimensions, scalar::Scalar, unit::Unit};
+use crate::{dimension::Dimensions, scalar::Scalar, unit::Unit};
 
 mod cmp;
 mod convert;
@@ -31,8 +31,8 @@ where
     }
 
     #[inline]
-    pub fn value(&self) -> S::Value {
-        self.value.get()
+    pub fn value(&self) -> S {
+        self.value
     }
 
     #[inline]
@@ -43,22 +43,16 @@ where
     }
 }
 
-impl<D: Dimensions> Quantity<F32Scalar, D> {
+impl<D: Dimensions> Quantity<f32, D> {
     #[inline]
     pub const fn from_f32(value: f32, unit: Unit<D>) -> Self {
-        Self {
-            value: F32Scalar::new(value),
-            unit,
-        }
+        Self { value, unit }
     }
 }
 
-impl<D: Dimensions> Quantity<F64Scalar, D> {
+impl<D: Dimensions> Quantity<f64, D> {
     #[inline]
     pub const fn from_f64(value: f64, unit: Unit<D>) -> Self {
-        Self {
-            value: F64Scalar::new(value),
-            unit,
-        }
+        Self { value, unit }
     }
 }

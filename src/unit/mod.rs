@@ -1,10 +1,6 @@
 #![allow(non_upper_case_globals)]
 
-use crate::{
-    dimension::*,
-    quantity::Quantity,
-    scalar::{F32Scalar, F64Scalar},
-};
+use crate::{dimension::*, quantity::Quantity};
 use core::marker::PhantomData;
 
 #[macro_use]
